@@ -24,7 +24,9 @@ export default {
         primary: { DEFAULT: "#e11d48", foreground: "#ffffff" }, // rose-600
         muted: { DEFAULT: "#f1f5f9", foreground: "#334155" },    // slate
         accent: { DEFAULT: "#0ea5e9", foreground: "#ffffff" },  // sky-500
-        border: "#fecdd3"                                       // rose-200
+  border: "#fecdd3",                                      // rose-200
+  background: { DEFAULT: "#f8fafc", foreground: "#334155" }, // custom background color
+  foreground: "#334155" // custom foreground color
       }
     }
   },
