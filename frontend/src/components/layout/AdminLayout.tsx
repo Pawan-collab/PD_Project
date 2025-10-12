@@ -44,6 +44,7 @@ const navigation: NavItem[] = [
   { name: "Feedback", href: "/admin/feedback", icon: MessageCircle },
   { name: "Articles", href: "/admin/articles", icon: PenTool },
   { name: "Projects", href: "/admin/projects", icon: FolderKanban },
+  { name: "Solutions", href: "/admin/solutions", icon: TrendingUp },
   { name: "Media", href: "/admin/media", icon: ImageIcon },
 ];
 

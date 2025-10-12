@@ -19,6 +19,7 @@ const galleryRouter = require("./routes/galleryRoutes");
 // const solutionRouter = require("./routes/solution.routes");
 // const eventRouter = require("./routes/event.route");
 // const eventRegistrationRouter = require("./routes/eventRegistration.routes");
+const solutionRouter = require("./routes/solutionRoutes");
 
 const app = express();
 
@@ -29,9 +30,9 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 const corsOptions = {
   origin: CLIENT_ORIGIN,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Range", "X-Content-Range"],
   maxAge: 600, // Cache preflight request for 10 minutes
   optionsSuccessStatus: 204, // Some legacy browsers choke on 204
 };
@@ -63,7 +64,7 @@ app.use("/gallery", galleryRouter);
 // app.use("/solutions", solutionRouter);
 // app.use("/events", eventRouter);
 // app.use("/eventRegistrations", eventRegistrationRouter);
-
+app.use("/solutions", solutionRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
