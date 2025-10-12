@@ -8,6 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { contactService } from "@/services/contact.service";
 import type { Contact } from "@/types/contact.types";
@@ -26,6 +36,7 @@ import {
   RefreshCw,
   Search,
   X,
+  AlertTriangle,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -35,6 +46,9 @@ export default function AdminContacts() {
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   // Fetch contacts on component mount
@@ -103,18 +117,32 @@ export default function AdminContacts() {
     }
   };
 
-  const handleDeleteContact = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this contact?")) return;
+  const openDeleteDialog = (contact: Contact) => {
+    setContactToDelete(contact);
+    setDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setContactToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!contactToDelete) return;
 
     try {
-      console.log("Deleting contact:", id);
-      await contactService.deleteContact(id);
+      setDeleting(true);
+      console.log("Deleting contact:", contactToDelete._id);
+      await contactService.deleteContact(contactToDelete._id);
       console.log("Contact deleted successfully");
 
       toast({
         title: "Success",
-        description: "Contact deleted successfully",
+        description: `Contact "${contactToDelete.name}" has been deleted successfully`,
       });
+
+      // Close dialog and clear state
+      closeDeleteDialog();
 
       // Refresh contacts and count
       await fetchContacts();
@@ -138,6 +166,8 @@ export default function AdminContacts() {
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -414,7 +444,7 @@ export default function AdminContacts() {
                         size="sm"
                         variant="destructive"
                         className="font-rajdhani bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 border border-red-400/30"
-                        onClick={() => handleDeleteContact(contact._id)}
+                        onClick={() => openDeleteDialog(contact)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
@@ -426,6 +456,75 @@ export default function AdminContacts() {
             ))}
           </div>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent className="glass border-primary/20">
+            <AlertDialogHeader>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 border border-red-400/30">
+                  <AlertTriangle className="h-6 w-6 text-red-400" />
+                </div>
+                <AlertDialogTitle className="text-xl font-orbitron text-foreground">
+                  Delete Contact
+                </AlertDialogTitle>
+              </div>
+              <AlertDialogDescription className="font-rajdhani text-base text-muted-foreground">
+                Are you sure you want to delete this contact? This action cannot be undone.
+              </AlertDialogDescription>
+              {contactToDelete && (
+                <div className="mt-4 p-4 rounded-lg bg-muted/30 border border-primary/10">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <UserCheck className="h-4 w-4 text-primary" />
+                      <span className="font-rajdhani font-semibold text-foreground">
+                        {contactToDelete.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="h-3 w-3 text-muted-foreground" />
+                      <span className="font-rajdhani text-muted-foreground">
+                        {contactToDelete.email}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Building className="h-3 w-3 text-muted-foreground" />
+                      <span className="font-rajdhani text-muted-foreground">
+                        {contactToDelete.company_name}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel
+                className="font-rajdhani border-primary/30"
+                disabled={deleting}
+                onClick={closeDeleteDialog}
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="font-rajdhani bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 border border-red-400/30"
+                onClick={confirmDelete}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Contact
+                  </>
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </AdminLayout>
   );
