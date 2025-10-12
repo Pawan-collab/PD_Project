@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
-import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
 import Solutions from "./pages/Solutions";
 import Projects from "./pages/Projects";
@@ -23,9 +22,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminContacts from "./pages/admin/AdminContacts";
 import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminArticles from "./pages/admin/AdminArticles";
-import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminMedia from "./pages/admin/AdminMedia";
-import AdminSettings from "./pages/admin/AdminSettings";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Cookies from "./pages/Cookies";
@@ -104,14 +101,6 @@ const App = () => (
             }
           />
           <Route
-            path="/admin/analytics"
-            element={
-              <ProtectedRoute>
-                <AdminAnalytics />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/admin/media"
             element={
               <ProtectedRoute>
@@ -119,15 +108,6 @@ const App = () => (
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/admin/settings"
-            element={
-              <ProtectedRoute>
-                <AdminSettings />
-              </ProtectedRoute>
-            }
-          />
-
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -39,13 +39,10 @@ interface NavItem {
 }
 
 const navigation: NavItem[] = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Inquiries", href: "/admin/contacts", icon: Users2 },
   { name: "Feedback", href: "/admin/feedback", icon: MessageCircle },
   { name: "Articles", href: "/admin/articles", icon: PenTool },
   { name: "Media", href: "/admin/media", icon: ImageIcon },
-  { name: "Analytics", href: "/admin/analytics", icon: TrendingUp },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
