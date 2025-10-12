@@ -79,11 +79,12 @@ class ContactService {
    */
   async getAllContacts(): Promise<Contact[]> {
     try {
-      const response = await apiService.get<Contact[]>(
+      const response = await apiService.get<{ contacts: Contact[] }>(
         API_ENDPOINTS.CONTACT.GET_ALL
       );
 
-      return response.data || [];
+      // Backend returns { message: "...", contacts: [...] }
+      return response.data?.contacts || [];
     } catch (error) {
       if (error instanceof ApiError) {
         throw error;

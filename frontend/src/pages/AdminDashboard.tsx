@@ -1,508 +1,360 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+/**
+ * Admin Dashboard Overview Page
+ */
+
+import AdminLayout from "@/components/layout/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { adminService } from "@/services/admin.service";
+import { Link } from "react-router-dom";
 import {
-  Power,
-  UserCheck,
+  Users2,
   MessageCircle,
   PenTool,
-  Settings,
-  AtSign,
-  Smartphone,
-  MapPin,
-  Activity,
-  Award,
-  Archive,
-  PlusCircle,
-  Search,
-  Filter,
   TrendingUp,
-  Users2,
-  Briefcase,
-  Calendar
+  Award,
+  Activity,
+  ArrowRight,
+  Calendar,
 } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const stats = [
+    {
+      label: "Total Inquiries",
+      value: "248",
+      change: "+12.5%",
+      trend: "up",
+      icon: Users2,
+      color: "blue",
+      link: "/admin/contacts",
+    },
+    {
+      label: "Customer Reviews",
+      value: "156",
+      change: "+8.3%",
+      trend: "up",
+      icon: MessageCircle,
+      color: "green",
+      link: "/admin/feedback",
+    },
+    {
+      label: "Published Articles",
+      value: "48",
+      change: "+15.2%",
+      trend: "up",
+      icon: PenTool,
+      color: "purple",
+      link: "/admin/articles",
+    },
+    {
+      label: "Average Rating",
+      value: "4.7",
+      change: "Excellent",
+      trend: "up",
+      icon: Award,
+      color: "yellow",
+      link: "/admin/feedback",
+    },
+  ];
 
-  const handleLogout = async () => {
-    try {
-      // Call admin service logout to clear auth data
-      await adminService.logout();
-
-      toast({
-        title: "Logged Out",
-        description: "You have been successfully logged out.",
-      });
-
-      // Navigate to login page
-      navigate("/admin/login", { replace: true });
-    } catch (error) {
-      console.error("Logout error:", error);
-
-      // Even if API fails, still clear local data and redirect
-      toast({
-        title: "Logged Out",
-        description: "You have been logged out.",
-      });
-
-      navigate("/admin/login", { replace: true });
-    }
-  };
-
-  // Mock data - replace with real API calls
-  const mockContacts = [
+  const recentInquiries = [
     {
       id: 1,
       name: "John Smith",
-      email: "john@company.com",
-      phone: "+1234567890",
       company: "Tech Corp",
-      country: "USA",
-      jobTitle: "CTO",
-      jobDetails: "Need AI solution for customer service automation",
-      createdAt: "2024-01-15"
+      status: "new",
+      time: "5 mins ago",
     },
     {
       id: 2,
       name: "Sarah Johnson",
-      email: "sarah@startup.com",
-      phone: "+1987654321",
       company: "InnovateCo",
-      country: "Canada",
-      jobTitle: "Product Manager",
-      jobDetails: "Looking for AI-powered analytics dashboard",
-      createdAt: "2024-01-14"
-    }
+      status: "pending",
+      time: "1 hour ago",
+    },
+    {
+      id: 3,
+      name: "Michael Chen",
+      company: "Global Solutions",
+      status: "new",
+      time: "2 hours ago",
+    },
   ];
 
-  const mockFeedback = [
+  const recentFeedback = [
     {
       id: 1,
       name: "Alice Brown",
-      email: "alice@example.com",
       rating: 5,
-      comment: "Excellent AI solutions! Very professional team.",
-      createdAt: "2024-01-16"
+      comment: "Excellent AI solutions!",
+      time: "10 mins ago",
     },
     {
       id: 2,
       name: "Bob Wilson",
-      email: "bob@example.com",
       rating: 4,
-      comment: "Great service, would recommend to others.",
-      createdAt: "2024-01-15"
-    }
+      comment: "Great service, would recommend.",
+      time: "45 mins ago",
+    },
   ];
 
-  const mockArticles = [
-    {
-      id: 1,
-      title: "The Future of AI in Business",
-      status: "published",
-      createdAt: "2024-01-10",
-      views: 1250
-    },
-    {
-      id: 2,
-      title: "How AI Transforms Customer Experience",
-      status: "draft",
-      createdAt: "2024-01-12",
-      views: 0
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "new":
+        return "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400";
+      case "pending":
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400";
+      default:
+        return "bg-gray-100 text-gray-700";
     }
-  ];
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
-      {/* Modern Sidebar Header */}
-      <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 shadow-lg">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <Activity className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">Command Center</h1>
-                <p className="text-white/80 text-sm">AI-Solutions Management Hub</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-white/90 text-sm">System Online</span>
-              </div>
-              <Button onClick={handleLogout} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                <Power className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
+    <AdminLayout>
+      <div className="space-y-6">
+        {/* Welcome Section */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
+            <p className="text-muted-foreground mt-1">
+              Welcome back! Here's what's happening today.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            <span>{new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric"
+            })}</span>
           </div>
         </div>
-      </div>
 
-      <div className="container mx-auto px-6 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <div className="bg-card rounded-xl p-2 shadow-sm border">
-            <TabsList className="grid w-full grid-cols-4 bg-transparent gap-1">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger value="contacts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Users2 className="w-4 h-4 mr-2" />
-                Inquiries
-              </TabsTrigger>
-              <TabsTrigger value="feedback" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Reviews
-              </TabsTrigger>
-              <TabsTrigger value="content" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <PenTool className="w-4 h-4 mr-2" />
-                Content
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          {/* Analytics Tab */}
-          <TabsContent value="overview" className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/50 border-blue-200 dark:border-blue-800">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                      <UserCheck className="h-5 w-5 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">+8.2%</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-2xl font-bold mb-1">24</div>
-                  <p className="text-sm text-muted-foreground">Total Inquiries</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/50 dark:to-emerald-900/50 border-emerald-200 dark:border-emerald-800">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                      <MessageCircle className="h-5 w-5 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">+12%</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-2xl font-bold mb-1">18</div>
-                  <p className="text-sm text-muted-foreground">Customer Reviews</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/50 dark:to-purple-900/50 border-purple-200 dark:border-purple-800">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                      <PenTool className="h-5 w-5 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">+3</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-2xl font-bold mb-1">12</div>
-                  <p className="text-sm text-muted-foreground">Published Content</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/50 dark:to-amber-900/50 border-amber-200 dark:border-amber-800">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
-                      <Award className="h-5 w-5 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">Excellent</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-2xl font-bold mb-1">4.7</div>
-                  <p className="text-sm text-muted-foreground">Average Rating</p>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Inquiries Tab */}
-          <TabsContent value="contacts" className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold">Business Inquiries</h2>
-                <p className="text-muted-foreground">Manage and respond to customer inquiries</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" size="sm">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filter
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Search className="w-4 h-4 mr-2" />
-                  Search
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid gap-6">
-              {mockContacts.map((contact) => (
-                <Card key={contact.id} className="group hover:shadow-lg transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center">
-                          <UserCheck className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-lg">{contact.name}</h3>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs">
-                              <Briefcase className="w-3 h-3 mr-1" />
-                              {contact.jobTitle}
-                            </Badge>
-                            <Badge variant="secondary" className="text-xs">
-                              <MapPin className="w-3 h-3 mr-1" />
-                              {contact.country}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        {contact.createdAt}
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm">
-                          <AtSign className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{contact.email}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Smartphone className="w-4 h-4 text-muted-foreground" />
-                          <span>{contact.phone}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="lg:col-span-2">
-                        <div className="bg-muted/50 rounded-lg p-3">
-                          <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                            <PenTool className="w-4 h-4" />
-                            Project Requirements
-                          </h4>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {contact.jobDetails}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center pt-4 border-t border-border/50">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        New inquiry from {contact.company}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="hover:bg-primary/10">
-                          <Search className="w-4 h-4 mr-1" />
-                          Review
-                        </Button>
-                        <Button size="sm" variant="outline" className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20">
-                          <Archive className="w-4 h-4 mr-1" />
-                          Archive
-                        </Button>
-                      </div>
-                    </div>
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Link key={index} to={stat.link}>
+                <Card className="hover:shadow-lg transition-all cursor-pointer group">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">
+                      {stat.label}
+                    </CardTitle>
+                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stat.value}</div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      <span className="text-green-600">{stat.change}</span>{" "}
+                      {stat.trend === "up" && "from last month"}
+                    </p>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </TabsContent>
+              </Link>
+            );
+          })}
+        </div>
 
-          {/* Reviews Tab */}
-          <TabsContent value="feedback" className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold">Customer Reviews</h2>
-                <p className="text-muted-foreground">Monitor customer satisfaction and feedback</p>
+        {/* Two Column Layout */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Recent Inquiries */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Recent Inquiries</CardTitle>
+              <Link to="/admin/contacts">
+                <Button variant="ghost" size="sm">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentInquiries.map((inquiry) => (
+                  <div
+                    key={inquiry.id}
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50">
+                        <Users2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{inquiry.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {inquiry.company}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge className={getStatusColor(inquiry.status)}>
+                        {inquiry.status}
+                      </Badge>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {inquiry.time}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center gap-3">
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  <Award className="w-3 h-3 mr-1" />
-                  4.7 Avg Rating
-                </Badge>
-              </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className="grid gap-6">
-              {mockFeedback.map((feedback) => (
-                <Card key={feedback.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/50 dark:to-emerald-800/50 rounded-full flex items-center justify-center">
-                            <MessageCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">{feedback.name}</h3>
-                            <p className="text-sm text-muted-foreground">{feedback.email}</p>
-                          </div>
+          {/* Recent Feedback */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Recent Feedback</CardTitle>
+              <Link to="/admin/feedback">
+                <Button variant="ghost" size="sm">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentFeedback.map((feedback) => (
+                  <div
+                    key={feedback.id}
+                    className="p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/50 dark:to-emerald-800/50">
+                          <MessageCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-3 py-1 rounded-full">
+                        <div>
+                          <p className="font-medium">{feedback.name}</p>
+                          <div className="flex items-center gap-1 mt-1">
                             {[...Array(5)].map((_, i) => (
                               <Award
                                 key={i}
-                                className={`w-3 h-3 ${
-                                  i < feedback.rating 
-                                    ? "fill-amber-400 text-amber-400" 
-                                    : "text-muted-foreground"
+                                className={`h-3 w-3 ${
+                                  i < feedback.rating
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "text-gray-300"
                                 }`}
                               />
                             ))}
-                            <span className="text-xs font-medium ml-1">{feedback.rating}.0</span>
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="mb-4">
-                        <div className="bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg p-4 relative">
-                          <div className="absolute top-3 left-3 w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
-                            <MessageCircle className="w-3 h-3 text-primary" />
-                          </div>
-                          <p className="text-sm leading-relaxed pl-8 italic">
-                            "{feedback.comment}"
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-between items-center pt-4 border-t border-border/50">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="w-4 h-4" />
-                          Received on {feedback.createdAt}
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline" className="hover:bg-primary/10">
-                            <Search className="w-4 h-4 mr-1" />
-                            Analyze
-                          </Button>
-                          <Button size="sm" variant="outline" className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20">
-                            <Archive className="w-4 h-4 mr-1" />
-                            Archive
-                          </Button>
-                        </div>
-                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {feedback.time}
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Content Management Tab */}
-          <TabsContent value="content" className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold">Content Studio</h2>
-                <p className="text-muted-foreground">Create, edit, and manage your content</p>
+                    <p className="text-sm text-muted-foreground italic pl-13">
+                      "{feedback.comment}"
+                    </p>
+                  </div>
+                ))}
               </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <Link to="/admin/contacts">
+                <Button variant="outline" className="w-full justify-start h-auto py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/20">
+                      <Users2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium">View Inquiries</p>
+                      <p className="text-xs text-muted-foreground">
+                        Manage contacts
+                      </p>
+                    </div>
+                  </div>
+                </Button>
+              </Link>
+
+              <Link to="/admin/feedback">
+                <Button variant="outline" className="w-full justify-start h-auto py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/20">
+                      <MessageCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium">Review Feedback</p>
+                      <p className="text-xs text-muted-foreground">
+                        Approve reviews
+                      </p>
+                    </div>
+                  </div>
+                </Button>
+              </Link>
+
+              <Link to="/admin/articles">
+                <Button variant="outline" className="w-full justify-start h-auto py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/20">
+                      <PenTool className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium">Create Article</p>
+                      <p className="text-xs text-muted-foreground">
+                        Write content
+                      </p>
+                    </div>
+                  </div>
+                </Button>
+              </Link>
+
+              <Link to="/admin/analytics">
+                <Button variant="outline" className="w-full justify-start h-auto py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/20">
+                      <TrendingUp className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium">View Analytics</p>
+                      <p className="text-xs text-muted-foreground">
+                        Check metrics
+                      </p>
+                    </div>
+                  </div>
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Status */}
+        <Card>
+          <CardHeader>
+            <CardTitle>System Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Button variant="outline" size="sm">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filter Status
-                </Button>
-                <Button className="bg-gradient-primary hover:shadow-glow">
-                  <PlusCircle className="w-4 h-4 mr-2" />
-                  Create Content
-                </Button>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                  <Activity className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <p className="font-medium">All Systems Operational</p>
+                  <p className="text-sm text-muted-foreground">
+                    Last checked: {new Date().toLocaleTimeString()}
+                  </p>
+                </div>
               </div>
+              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                Healthy
+              </Badge>
             </div>
-
-            <div className="grid gap-6">
-              {mockArticles.map((article) => (
-                <Card key={article.id} className="group hover:shadow-lg transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/50 dark:to-purple-800/50 rounded-lg flex items-center justify-center">
-                          <PenTool className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                            {article.title}
-                          </h3>
-                          <div className="flex items-center gap-3 mt-1">
-                            <Badge 
-                              variant={article.status === "published" ? "default" : "secondary"}
-                              className={article.status === "published" 
-                                ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" 
-                                : "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400"
-                              }
-                            >
-                              {article.status === "published" ? "Live" : "Draft"}
-                            </Badge>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Calendar className="w-3 h-3" />
-                              {article.createdAt}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <div className="flex items-center gap-1 text-sm font-medium">
-                            <TrendingUp className="w-4 h-4 text-primary" />
-                            {article.views.toLocaleString()}
-                          </div>
-                          <p className="text-xs text-muted-foreground">Views</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center pt-4 border-t border-border/50">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <div className={`w-2 h-2 rounded-full ${
-                          article.status === "published" ? "bg-green-500" : "bg-amber-500"
-                        }`}></div>
-                        {article.status === "published" ? "Published & Active" : "Draft in Progress"}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="hover:bg-primary/10">
-                          <Search className="w-4 h-4 mr-1" />
-                          Preview
-                        </Button>
-                        <Button size="sm" variant="outline" className="hover:bg-primary/10">
-                          <PenTool className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button size="sm" variant="outline" className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20">
-                          <Archive className="w-4 h-4 mr-1" />
-                          Archive
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

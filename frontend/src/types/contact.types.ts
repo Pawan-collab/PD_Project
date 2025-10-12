@@ -27,6 +27,15 @@ export interface ContactApiPayload {
 }
 
 /**
+ * Contact Message Interface
+ */
+export interface ContactMessage {
+  message: string;
+  submitted_at: string;
+  _id?: string;
+}
+
+/**
  * Contact Response Interface
  * Matches the backend response structure
  */
@@ -38,9 +47,9 @@ export interface Contact {
   company_name: string;
   country: string;
   job_title: string;
-  message: string;
-  createdAt: string;
-  updatedAt: string;
+  messages: ContactMessage[];
+  created_at: string;
+  updatedAt?: string;
 }
 
 /**
