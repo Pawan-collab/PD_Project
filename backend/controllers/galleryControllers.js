@@ -9,17 +9,31 @@ module.exports.createGallery = async (req, res) => {
 
   try {
     const file = req.file;
-    if (!file) {
-      return res.status(400).json({ error: "An image file is required" });
+    const { imageUrl, media_type } = req.body;
+
+    // Check if either file or imageUrl is provided
+    if (!file && !imageUrl) {
+      return res.status(400).json({ error: "An image file or media URL is required" });
     }
 
-    const galleryData = {
-      ...req.body,
-      image_filename: file.filename,
-      image_path: file.path,
-      image_mime: file.mimetype,
-      image_size: file.size,
-    };
+    let galleryData = { ...req.body };
+
+    // If file is uploaded, use file data
+    if (file) {
+      galleryData.image_filename = file.filename;
+      galleryData.image_path = file.path;
+      galleryData.image_mime = file.mimetype;
+      galleryData.image_size = file.size;
+      galleryData.media_type = 'image';
+    }
+    // If imageUrl is provided, use it directly
+    else if (imageUrl) {
+      galleryData.image_filename = imageUrl.split('/').pop() || 'external-media';
+      galleryData.image_path = imageUrl; // Store URL as path
+      galleryData.media_type = media_type || 'image';
+      galleryData.image_mime = media_type === 'video' ? 'video/youtube' : 'image/external';
+      galleryData.image_size = 0;
+    }
 
     const newGallery = await galleryService.createGallery(galleryData);
 
@@ -63,13 +77,24 @@ module.exports.getGalleryById = async (req, res) => {
 module.exports.updateGallery = async (req, res) => {
   try {
     const file = req.file;
+    const { imageUrl, media_type } = req.body;
     let updateData = { ...req.body };
 
+    // If file is uploaded, use file data
     if (file) {
       updateData.image_filename = file.filename;
       updateData.image_path = file.path;
       updateData.image_mime = file.mimetype;
       updateData.image_size = file.size;
+      updateData.media_type = 'image';
+    }
+    // If imageUrl is provided, use it directly
+    else if (imageUrl) {
+      updateData.image_filename = imageUrl.split('/').pop() || 'external-media';
+      updateData.image_path = imageUrl; // Store URL as path
+      updateData.media_type = media_type || 'image';
+      updateData.image_mime = media_type === 'video' ? 'video/youtube' : 'image/external';
+      updateData.image_size = 0;
     }
 
     const updatedGallery = await galleryService.updateGallery(req.params.id, updateData);

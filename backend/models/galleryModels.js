@@ -32,6 +32,11 @@ const gallerySchema = new mongoose.Schema(
       maxlength: [2000, "Content must be a maximum of 2000 characters"],
       trim: true,
     },
+    media_type: {
+      type: String,
+      enum: ["image", "video"],
+      default: "image",
+    },
     image_filename: {
       type: String,
       required: true,

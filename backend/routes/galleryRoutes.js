@@ -7,7 +7,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 router.post(
   "/create",
-  singleUpload({ subdir: "gallery" }),
+  singleUpload({ subdir: "gallery", fieldName: "image" }),
   [
     body("title")
       .isString()
@@ -28,7 +28,7 @@ router.post(
     body("featured").optional().isBoolean(),
   ],
   authMiddleware.authAdmin,
-  galleryControllers.createGallery
+  galleryController.createGallery
 );
 
 router.get("/", galleryController.getAllGalleries);
@@ -37,7 +37,7 @@ router.get("/:id", galleryController.getGalleryById);
 
 router.put(
   "/:id",
-  singleUpload({ subdir: "gallery" }),
+  singleUpload({ subdir: "gallery", fieldName: "image" }),
   [
     body("title").optional().isString().isLength({ min: 3, max: 120 }),
     body("category").optional().isString(),
