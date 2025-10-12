@@ -1,13 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Power, 
-  UserCheck, 
-  MessageCircle, 
-  PenTool, 
+import { useToast } from "@/hooks/use-toast";
+import { adminService } from "@/services/admin.service";
+import {
+  Power,
+  UserCheck,
+  MessageCircle,
+  PenTool,
   Settings,
   AtSign,
   Smartphone,
@@ -26,11 +29,32 @@ import {
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleLogout = () => {
-    // Add logout logic here
-    console.log("Logging out...");
-    window.location.href = "/admin/login";
+  const handleLogout = async () => {
+    try {
+      // Call admin service logout to clear auth data
+      await adminService.logout();
+
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+
+      // Navigate to login page
+      navigate("/admin/login", { replace: true });
+    } catch (error) {
+      console.error("Logout error:", error);
+
+      // Even if API fails, still clear local data and redirect
+      toast({
+        title: "Logged Out",
+        description: "You have been logged out.",
+      });
+
+      navigate("/admin/login", { replace: true });
+    }
   };
 
   // Mock data - replace with real API calls

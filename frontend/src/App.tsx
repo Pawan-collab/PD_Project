@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
 import Solutions from "./pages/Solutions";
@@ -48,8 +50,27 @@ const App = () => (
           <Route path="/cookies" element={<Cookies />} />
           <Route path="/security" element={<Security />} />
           <Route path="/compliance" element={<Compliance />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+          {/* Admin Routes */}
+          {/* Public route - redirects to dashboard if already logged in */}
+          <Route
+            path="/admin/login"
+            element={
+              <PublicRoute>
+                <AdminLogin />
+              </PublicRoute>
+            }
+          />
+          {/* Protected routes - requires authentication */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

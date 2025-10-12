@@ -73,6 +73,22 @@ class BaseApiService {
       const errorMessage = data?.error || data?.message || `HTTP ${response.status}: ${response.statusText}`;
       const errors = data?.errors || [];
 
+      // Handle 401 Unauthorized - clear auth and redirect to login
+      if (response.status === 401) {
+        // Clear authentication data
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('authTokenExpiry');
+        localStorage.removeItem('adminData');
+        localStorage.removeItem('rememberMe');
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('authTokenExpiry');
+
+        // Only redirect if not already on login page
+        if (!window.location.pathname.includes('/admin/login')) {
+          window.location.href = '/admin/login';
+        }
+      }
+
       throw new ApiError(errorMessage, response.status, errors);
     }
 

@@ -3,29 +3,19 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, EyeOff, Shield, User, Cpu, Sparkles, ArrowLeft } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, Shield, User, Cpu, Sparkles, ArrowLeft, AlertCircle } from "lucide-react";
+import { useAdminLogin } from "@/hooks/useAdminLogin";
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { form, isLoading, onSubmit } = useAdminLogin();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Add your login logic here
-    console.log("Login attempt:", { email, password });
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Redirect to admin dashboard on success
-      window.location.href = "/admin/dashboard";
-    }, 1000);
-  };
+  const {
+    register,
+    formState: { errors },
+  } = form;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex">
@@ -87,23 +77,32 @@ export default function AdminLogin() {
           
           <Card className="border-0 shadow-2xl">
             <CardContent className="p-8">
-              <form onSubmit={handleLogin} className="space-y-6">
+              <form onSubmit={onSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
+                  <Label htmlFor="identifier" className="text-sm font-medium">
+                    Email or Username
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-12 h-12 bg-muted/50 border-0 focus:bg-background transition-colors"
-                      required
+                      id="identifier"
+                      type="text"
+                      placeholder="Enter your email or username"
+                      {...register('identifier')}
+                      className={`pl-12 h-12 bg-muted/50 border-0 focus:bg-background transition-colors ${
+                        errors.identifier ? 'border-2 border-destructive' : ''
+                      }`}
+                      disabled={isLoading}
                     />
                   </div>
+                  {errors.identifier && (
+                    <div className="flex items-center gap-2 text-sm text-destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <span>{errors.identifier.message}</span>
+                    </div>
+                  )}
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-sm font-medium">Password</Label>
                   <div className="relative">
@@ -112,24 +111,46 @@ export default function AdminLogin() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-12 pr-12 h-12 bg-muted/50 border-0 focus:bg-background transition-colors"
-                      required
+                      {...register('password')}
+                      className={`pl-12 pr-12 h-12 bg-muted/50 border-0 focus:bg-background transition-colors ${
+                        errors.password ? 'border-2 border-destructive' : ''
+                      }`}
+                      disabled={isLoading}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      disabled={isLoading}
                     >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
+                  {errors.password && (
+                    <div className="flex items-center gap-2 text-sm text-destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <span>{errors.password.message}</span>
+                    </div>
+                  )}
                 </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 text-base font-medium bg-gradient-primary hover:shadow-glow transition-all duration-300" 
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="rememberMe"
+                    {...register('rememberMe')}
+                    disabled={isLoading}
+                  />
+                  <label
+                    htmlFor="rememberMe"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
+                  >
+                    Remember me for 7 days
+                  </label>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full h-12 text-base font-medium bg-gradient-primary hover:shadow-glow transition-all duration-300"
                   disabled={isLoading}
                 >
                   {isLoading ? (

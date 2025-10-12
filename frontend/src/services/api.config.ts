@@ -29,11 +29,11 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/contact/${id}`,
   },
 
-  // Admin endpoints (for future use)
+  // Admin endpoints
   ADMIN: {
     LOGIN: '/admin/login',
     LOGOUT: '/admin/logout',
-    VERIFY: '/admin/verify',
+    PROFILE: '/admin/profile',
   },
 } as const;
 
