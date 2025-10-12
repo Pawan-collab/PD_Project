@@ -1,23 +1,49 @@
+import { useState, useEffect } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  ExternalLink, 
-  TrendingUp, 
-  Users, 
-  Clock, 
+import {
+  ExternalLink,
+  TrendingUp,
+  Users,
+  Clock,
   Award,
   ArrowUpRight,
   Filter,
   Calendar,
   Building,
   Target,
-  Sparkles
+  Sparkles,
+  Loader2
 } from "lucide-react";
+import { projectService, Project } from "@/services/project.service";
 
 const Projects = () => {
-  const projects = [
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await projectService.getActiveProjects();
+      setProjects(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load projects");
+      console.error("Error fetching projects:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Static data for demo purposes - can be replaced with API
+  const mockProjects = [
     {
       id: 1,
       title: "Healthcare AI Intelligence Platform",
@@ -120,11 +146,16 @@ const Projects = () => {
     }
   ];
 
+  // Calculate stats from projects - must be before stats array
+  const completedCount = projects.filter(p => p.process === "Completed").length;
+  const ongoingCount = projects.filter(p => p.process === "Ongoing").length;
+  const featuredCount = projects.filter(p => p.badge === "Featured").length;
+
   const stats = [
-    { icon: Award, value: "150+", label: "Successful Projects" },
-    { icon: Users, value: "50+", label: "Industry Sectors" },
-    { icon: TrendingUp, value: "320%", label: "Average ROI" },
-    { icon: Clock, value: "99.8%", label: "On-time Delivery" }
+    { icon: Award, value: projects.length.toString(), label: "Total Projects" },
+    { icon: Clock, value: completedCount.toString(), label: "Completed" },
+    { icon: TrendingUp, value: ongoingCount.toString(), label: "Ongoing" },
+    { icon: Users, value: featuredCount.toString(), label: "Featured" }
   ];
 
   const industries = [
@@ -159,6 +190,36 @@ const Projects = () => {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <Card className="text-center p-12">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading projects...</p>
+          </Card>
+        )}
+
+        {/* Error State */}
+        {error && !isLoading && (
+          <Card className="text-center p-12 border-destructive">
+            <p className="text-destructive mb-4">{error}</p>
+            <Button onClick={fetchProjects} variant="outline">
+              Try Again
+            </Button>
+          </Card>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && projects.length === 0 && (
+          <Card className="text-center p-12">
+            <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">No projects available at the moment.</p>
+          </Card>
+        )}
+
+        {/* Content - only show when not loading and have projects */}
+        {!isLoading && !error && projects.length > 0 && (
+          <>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
@@ -172,35 +233,38 @@ const Projects = () => {
           ))}
         </div>
 
-        {/* Featured Projects */}
+        {/* All Projects */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-space font-bold">Featured Case Studies</h2>
-            <Button variant="outline" size="sm">
-              View All Projects
-              <ArrowUpRight className="w-4 h-4 ml-2" />
-            </Button>
+            <h2 className="text-2xl font-space font-bold">Our Projects</h2>
+            <div className="text-sm text-muted-foreground">
+              Showing {projects.length} project{projects.length !== 1 ? 's' : ''}
+            </div>
           </div>
 
           <div className="space-y-6">
-            {projects.filter(p => p.featured).map((project) => (
-              <Card key={project.id} className="group hover-lift glass-surface border-border/50">
+            {projects.map((project) => (
+              <Card key={project._id} className="group hover-lift glass-surface border-border/50">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="space-y-2">
                       <div className="flex items-center gap-3">
-                        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                          {project.industry}
+                        {project.badge && (
+                          <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                            {project.badge}
+                          </Badge>
+                        )}
+                        <Badge variant={project.process === "Completed" ? "default" : "secondary"}>
+                          {project.process}
                         </Badge>
-                        <Badge variant={project.status === "Completed" ? "default" : "secondary"}>
-                          {project.status}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">{project.year}</span>
+                        {project.date && project.date[0] && (
+                          <span className="text-sm text-muted-foreground">{new Date(project.date[0]).getFullYear()}</span>
+                        )}
                       </div>
                       <CardTitle className="text-xl group-hover:gradient-text transition-all">
                         {project.title}
                       </CardTitle>
-                      <p className="text-muted-foreground">{project.client}</p>
+                      <p className="text-muted-foreground">{project.company_name}</p>
                     </div>
                     <ExternalLink className="w-5 h-5 text-muted-foreground group-hover:text-primary cursor-pointer transition-colors" />
                   </div>
@@ -222,108 +286,42 @@ const Projects = () => {
                         </div>
                         <div>
                           <span className="text-muted-foreground">Team Size:</span>
-                          <p className="font-medium">{project.team}</p>
+                          <p className="font-medium">{project.team_size}</p>
                         </div>
                       </div>
 
-                      <div>
-                        <h5 className="font-medium mb-2">Technologies Used:</h5>
-                        <div className="flex flex-wrap gap-2">
-                          {project.technologies.map((tech, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                              {tech}
-                            </Badge>
-                          ))}
+                      {project.technologies_used && project.technologies_used.length > 0 && (
+                        <div>
+                          <h5 className="font-medium mb-2">Technologies Used:</h5>
+                          <div className="flex flex-wrap gap-2">
+                            {project.technologies_used.map((tech, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {tech}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
 
                     {/* Results & Metrics */}
                     <div className="space-y-4">
                       <h4 className="font-semibold">Key Results</h4>
-                      <div className="space-y-2">
-                        {project.results.map((result, idx) => (
-                          <div key={idx} className="flex items-center text-sm">
-                            <div className="w-2 h-2 bg-accent rounded-full mr-3 flex-shrink-0" />
-                            <span className="text-muted-foreground">{result}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 pt-4">
-                        <div className="text-center p-3 bg-muted/30 rounded-lg">
-                          <div className="text-lg font-bold text-primary">{project.metrics.roi}</div>
-                          <div className="text-xs text-muted-foreground">ROI</div>
+                      {project.key_results && project.key_results.length > 0 ? (
+                        <div className="space-y-2">
+                          {project.key_results.map((result, idx) => (
+                            <div key={idx} className="flex items-center text-sm">
+                              <div className="w-2 h-2 bg-accent rounded-full mr-3 flex-shrink-0" />
+                              <span className="text-muted-foreground">{result}</span>
+                            </div>
+                          ))}
                         </div>
-                        <div className="text-center p-3 bg-muted/30 rounded-lg">
-                          <div className="text-lg font-bold text-secondary">{project.metrics.satisfaction}</div>
-                          <div className="text-xs text-muted-foreground">Satisfaction</div>
-                        </div>
-                      </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No key results available</p>
+                      )}
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-border/50">
-                    <Button className="w-full bg-gradient-primary hover:shadow-glow group">
-                      View Detailed Case Study
-                      <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* All Projects Grid */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-space font-bold">All Projects</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {projects.filter(p => !p.featured).map((project) => (
-              <Card key={project.id} className="group hover-lift glass-surface border-border/50">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                      {project.industry}
-                    </Badge>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={project.status === "Completed" ? "default" : "secondary"}>
-                        {project.status}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">{project.year}</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg group-hover:gradient-text transition-all">
-                    {project.title}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">{project.client}</p>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {project.description}
-                  </p>
-
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="p-2 bg-muted/30 rounded">
-                      <div className="text-sm font-bold text-primary">{project.metrics.roi}</div>
-                      <div className="text-xs text-muted-foreground">ROI</div>
-                    </div>
-                    <div className="p-2 bg-muted/30 rounded">
-                      <div className="text-sm font-bold text-secondary">{project.metrics.users}</div>
-                      <div className="text-xs text-muted-foreground">Users</div>
-                    </div>
-                    <div className="p-2 bg-muted/30 rounded">
-                      <div className="text-sm font-bold text-accent">{project.metrics.uptime}</div>
-                      <div className="text-xs text-muted-foreground">Uptime</div>
-                    </div>
-                  </div>
-
-                  <Button variant="outline" className="w-full group">
-                    View Details
-                    <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -365,6 +363,8 @@ const Projects = () => {
             </Button>
           </CardContent>
         </Card>
+        </>
+        )}
       </div>
     </AppLayout>
   );

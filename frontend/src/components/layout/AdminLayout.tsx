@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   Shield,
   Bell,
+  FolderKanban,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +43,7 @@ const navigation: NavItem[] = [
   { name: "Inquiries", href: "/admin/contacts", icon: Users2 },
   { name: "Feedback", href: "/admin/feedback", icon: MessageCircle },
   { name: "Articles", href: "/admin/articles", icon: PenTool },
+  { name: "Projects", href: "/admin/projects", icon: FolderKanban },
   { name: "Media", href: "/admin/media", icon: ImageIcon },
 ];
 

@@ -147,9 +147,9 @@ const Footer = () => {
               Product
             </h4>
             <div className="space-y-2">
-              {footerLinks.product.map((link) => (
+              {footerLinks.product.map((link, index) => (
                 <Link
-                  key={link.path}
+                  key={`product-${link.name}-${index}`}
                   to={link.path}
                   className="block text-sm text-muted-foreground hover:text-primary transition-all hover:translate-x-1"
                 >
@@ -165,9 +165,9 @@ const Footer = () => {
               Company
             </h4>
             <div className="space-y-2">
-              {footerLinks.company.map((link) => (
+              {footerLinks.company.map((link, index) => (
                 <Link
-                  key={link.path}
+                  key={`company-${link.name}-${index}`}
                   to={link.path}
                   className="block text-sm text-muted-foreground hover:text-primary transition-all hover:translate-x-1"
                 >
@@ -183,9 +183,9 @@ const Footer = () => {
               Resources
             </h4>
             <div className="space-y-2">
-              {footerLinks.resources.map((link) => (
+              {footerLinks.resources.map((link, index) => (
                 <Link
-                  key={link.path}
+                  key={`resources-${link.name}-${index}`}
                   to={link.path}
                   className="block text-sm text-muted-foreground hover:text-primary transition-all hover:translate-x-1"
                 >
@@ -201,9 +201,9 @@ const Footer = () => {
               Legal
             </h4>
             <div className="space-y-2">
-              {footerLinks.legal.map((link) => (
+              {footerLinks.legal.map((link, index) => (
                 <Link
-                  key={link.path}
+                  key={`legal-${link.name}-${index}`}
                   to={link.path}
                   className="block text-sm text-muted-foreground hover:text-primary transition-all hover:translate-x-1"
                 >

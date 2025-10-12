@@ -12,11 +12,11 @@ const contactRouter = require("./routes/contactRoutes");
 const feedbackRouter = require("./routes/feedbackRoutes");
 const postRouter = require("./routes/postRoutes");
 const articleRouter = require("./routes/articleRoutes");
+const projectRouter = require("./routes/projectRoutes");
 const galleryRouter = require("./routes/galleryRoutes");
 // const chatbotRouter = require("./routes/chatBot.routes");
 // const industryRouter = require("./routes/industry.routes");
 // const solutionRouter = require("./routes/solution.routes");
-// const projectRouter = require("./routes/project.routes");
 // const eventRouter = require("./routes/event.route");
 // const eventRegistrationRouter = require("./routes/eventRegistration.routes");
 
@@ -56,11 +56,11 @@ app.use("/contact", contactRouter);
 app.use("/feedback", feedbackRouter);
 app.use("/posts", postRouter);
 app.use("/articles", articleRouter);
+app.use("/projects", projectRouter);
 app.use("/gallery", galleryRouter);
 // app.use("/chatbot", chatbotRouter);
 // app.use("/industries", industryRouter);
 // app.use("/solutions", solutionRouter);
-// app.use("/projects", projectRouter);
 // app.use("/events", eventRouter);
 // app.use("/eventRegistrations", eventRegistrationRouter);
 

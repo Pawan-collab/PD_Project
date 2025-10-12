@@ -22,6 +22,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminContacts from "./pages/admin/AdminContacts";
 import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminArticles from "./pages/admin/AdminArticles";
+import AdminProjects from "./pages/admin/AdminProjects";
 import AdminMedia from "./pages/admin/AdminMedia";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -97,6 +98,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <AdminArticles />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/projects"
+            element={
+              <ProtectedRoute>
+                <AdminProjects />
               </ProtectedRoute>
             }
           />

@@ -35,18 +35,18 @@ function clamp(n, min, max) {
 const BASE_WPM = 200;
 function estimateReadTimeMinutes(text = "", wpm = BASE_WPM) {
   const words = wordCount(text);
-  const w = clamp(Number(wpm) || BASE_WPM, 60, 1200); 
+  const w = clamp(Number(wpm) || BASE_WPM, 60, 1200);
   const minutes = Math.round(words / w);
-  return clamp(minutes || 1, 1, 120); 
+  return clamp(minutes || 1, 1, 120);
 }
 
 const articleSchema = new Schema(
   {
     title: {
       type: String,
-      required: [true, "Title is required"],
-      minlength: [5, "Title must be at least 5 characters"],
-      maxlength: [150, "Title must be at most 150 characters"],
+      required: [true, "Title is mandatory"],
+      minlength: [5, "Title must have at least 5 characters"],
+      maxlength: [150, "Title must not exceed 150 characters"],
       trim: true,
     },
     slug: {
@@ -58,22 +58,22 @@ const articleSchema = new Schema(
     },
     summary: {
       type: String,
-      required: [true, "Summary is required"],
-      minlength: [30, "Summary must be at least 30 characters"],
-      maxlength: [300, "Summary must be at most 300 characters"],
+      required: [true, "Summary is mandatory"],
+      minlength: [30, "Summary must be a minimum of 30 characters"],
+      maxlength: [300, "Summary must be no more than 300 characters"],
       trim: true,
     },
     content: {
       type: String,
-      required: [true, "Content is required"],
-      minlength: [100, "Content must be at least 100 characters"],
+      required: [true, "Content is mandatory"],
+      minlength: [100, "Content must be at least 100 characters long"],
     },
 
     category: {
       type: String,
       enum: {
         values: CATEGORIES,
-        message: "Category must be one of the predefined options",
+        message: "Category must match one of the predefined choices",
       },
       required: [true, "Category is required"],
       index: true,
@@ -82,7 +82,7 @@ const articleSchema = new Schema(
       type: [String],
       validate: {
         validator: (arr) => Array.isArray(arr) && arr.length <= 8,
-        message: "You can assign at most 8 tags",
+        message: "You may assign up to 8 tags maximum",
       },
       default: [],
     },
@@ -90,8 +90,8 @@ const articleSchema = new Schema(
     author_name: {
       type: String,
       required: [true, "Author name is required"],
-      minlength: [2, "Author name must be at least 2 characters"],
-      maxlength: [60, "Author name must be at most 60 characters"],
+      minlength: [2, "Author name must include at least 2 characters"],
+      maxlength: [60, "Author name must include at most 60 characters"],
       trim: true,
     },
     author_id: {
@@ -112,7 +112,7 @@ const articleSchema = new Schema(
     featured_badge_text: {
       type: String,
       default: "Featured Article",
-      maxlength: [40, "Badge text must be at most 40 characters"],
+      maxlength: [40, "Badge text must not exceed 40 characters"],
     },
     published_at: {
       type: Date,
@@ -147,19 +147,19 @@ const articleSchema = new Schema(
     },
     engaged_sessions: {
       type: Number,
-      min: [0, "Engagement sessions cannot be negative"],
+      min: [0, "Engaged sessions cannot be negative"],
       default: 0,
     },
     last_engaged_at: { type: Date },
 
     seo_title: {
       type: String,
-      maxlength: [70, "SEO title must be at most 70 characters"],
+      maxlength: [70, "SEO title must be 70 characters or fewer"],
       trim: true,
     },
     seo_description: {
       type: String,
-      maxlength: [160, "SEO description must be at most 160 characters"],
+      maxlength: [160, "SEO description must be 160 characters or fewer"],
       trim: true,
     },
   },

@@ -76,26 +76,28 @@ const Navbar = () => {
                 )} />
               </button>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown Menu - Fixed positioning */}
               {openDropdown === key && (
-                <div className="absolute top-full left-0 mt-2 w-64 glass rounded-lg border border-primary/20 shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  {menu.items.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={cn(
-                        "block px-4 py-3 hover:bg-primary/10 transition-colors border-b border-border/30 last:border-0",
-                        location.pathname === item.path && "bg-primary/5"
-                      )}
-                    >
-                      <div className="font-rajdhani font-semibold text-foreground">
-                        {item.name}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
-                        {item.description}
-                      </div>
-                    </Link>
-                  ))}
+                <div className="absolute top-full left-0 pt-1 w-64">
+                  <div className="glass rounded-lg border border-primary/20 shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    {menu.items.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        className={cn(
+                          "block px-4 py-3 hover:bg-primary/10 transition-colors border-b border-border/30 last:border-0",
+                          location.pathname === item.path && "bg-primary/5"
+                        )}
+                      >
+                        <div className="font-rajdhani font-semibold text-foreground">
+                          {item.name}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          {item.description}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -121,11 +123,6 @@ const Navbar = () => {
           <Link to="/contact">
             <Button variant="outline" size="sm" className="border-primary/30 hover:bg-primary/10 font-rajdhani">
               Contact Sales
-            </Button>
-          </Link>
-          <Link to="/contact">
-            <Button size="sm" className="bg-gradient-cyber hover:shadow-neon font-rajdhani font-medium border border-primary/30">
-              Get Started
             </Button>
           </Link>
         </div>
@@ -196,11 +193,6 @@ const Navbar = () => {
               <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button variant="outline" className="w-full border-primary/30 hover:bg-primary/10 font-rajdhani">
                   Contact Sales
-                </Button>
-              </Link>
-              <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="w-full bg-gradient-cyber hover:shadow-neon font-rajdhani font-medium">
-                  Get Started
                 </Button>
               </Link>
             </div>
