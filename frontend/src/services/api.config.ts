@@ -49,6 +49,44 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/feedback/${id}`,
     APPROVE: (id: string) => `/feedback/${id}/approve`,
   },
+
+  // Post endpoints (legacy)
+  POSTS: {
+    CREATE: '/posts/create',
+    GET_ALL: '/posts',
+    GET_RECENT: '/posts/recent',
+    GET_BY_ID: (id: string) => `/posts/${id}`,
+    UPDATE: (id: string) => `/posts/${id}`,
+    DELETE: (id: string) => `/posts/${id}`,
+  },
+
+  // Article endpoints (new)
+  ARTICLES: {
+    CREATE: '/articles/create',
+    GET_ALL: '/articles',
+    GET_PUBLISHED: '/articles/published',
+    GET_FEATURED: '/articles/featured',
+    GET_RECENT: '/articles/recent',
+    GET_BY_ID: (id: string) => `/articles/${id}`,
+    GET_BY_SLUG: (slug: string) => `/articles/slug/${slug}`,
+    GET_BY_CATEGORY: (category: string) => `/articles/category/${category}`,
+    UPDATE: (id: string) => `/articles/${id}`,
+    DELETE: (id: string) => `/articles/${id}`,
+    INCREMENT_VIEW: (id: string) => `/articles/${id}/view`,
+    LIKE: (id: string) => `/articles/${id}/like`,
+    UNLIKE: (id: string) => `/articles/${id}/unlike`,
+    SEARCH: '/articles/search',
+  },
+
+  // Gallery endpoints
+  GALLERY: {
+    CREATE: '/gallery/create',
+    GET_ALL: '/gallery',
+    GET_RECENT: '/gallery/recent',
+    GET_BY_ID: (id: string) => `/gallery/${id}`,
+    UPDATE: (id: string) => `/gallery/${id}`,
+    DELETE: (id: string) => `/gallery/${id}`,
+  },
 } as const;
 
 /**

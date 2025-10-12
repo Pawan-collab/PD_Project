@@ -13,6 +13,7 @@ import Projects from "./pages/Projects";
 import Gallery from "./pages/Gallery";
 import Events from "./pages/Events";
 import Articles from "./pages/Articles";
+import ArticleDetail from "./pages/ArticleDetail";
 import Feedback from "./pages/Feedback";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/events" element={<Events />} />
           <Route path="/articles" element={<Articles />} />
+          <Route path="/articles/:slug" element={<ArticleDetail />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

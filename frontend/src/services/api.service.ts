@@ -176,6 +176,78 @@ class BaseApiService {
   public async patch<T>(endpoint: string, body?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { ...config, method: HttpMethod.PATCH, body });
   }
+
+  /**
+   * POST request with FormData (for file uploads)
+   */
+  public async postFormData<T>(endpoint: string, formData: FormData, config?: RequestConfig): Promise<ApiResponse<T>> {
+    try {
+      const url = this.buildUrl(endpoint);
+      const headers: HeadersInit = {};
+
+      // Add auth token if available
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // Don't set Content-Type header - browser will set it with boundary for multipart/form-data
+
+      const requestOptions: RequestInit = {
+        method: HttpMethod.POST,
+        headers,
+        credentials: 'include',
+        body: formData,
+      };
+
+      const response = await fetch(url, requestOptions);
+      return await this.handleResponse<T>(response);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(
+        error instanceof Error ? error.message : 'Network error occurred',
+        0
+      );
+    }
+  }
+
+  /**
+   * PUT request with FormData (for file uploads)
+   */
+  public async putFormData<T>(endpoint: string, formData: FormData, config?: RequestConfig): Promise<ApiResponse<T>> {
+    try {
+      const url = this.buildUrl(endpoint);
+      const headers: HeadersInit = {};
+
+      // Add auth token if available
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // Don't set Content-Type header - browser will set it with boundary for multipart/form-data
+
+      const requestOptions: RequestInit = {
+        method: HttpMethod.PUT,
+        headers,
+        credentials: 'include',
+        body: formData,
+      };
+
+      const response = await fetch(url, requestOptions);
+      return await this.handleResponse<T>(response);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(
+        error instanceof Error ? error.message : 'Network error occurred',
+        0
+      );
+    }
+  }
 }
 
 // Export singleton instance

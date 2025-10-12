@@ -1,96 +1,57 @@
+import { useState, useEffect } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Calendar, Users, MapPin, Award, Sparkles, Camera, Images } from "lucide-react";
+import { ArrowRight, Calendar, Users, MapPin, Award, Sparkles, Camera, Images, Loader2, Play } from "lucide-react";
+import { galleryService, Gallery as GalleryType, GalleryCategory } from "@/services/gallery.service";
 
 const Gallery = () => {
-  const galleryItems = [
-    {
-      title: "AI Innovation Summit 2024",
-      category: "Conference",
-      date: "March 2024",
-      location: "London, UK",
-      description: "Our CEO Dr. Sarah Mitchell presented cutting-edge AI solutions to industry leaders.",
-      image: "conference-2024",
-      type: "event"
-    },
-    {
-      title: "TechCorp Factory Visit",
-      category: "Client Visit",
-      date: "February 2024",
-      location: "Manchester, UK",
-      description: "Implementation team visiting TechCorp's manufacturing facility for AI assistant deployment.",
-      image: "factory-visit",
-      type: "project"
-    },
-    {
-      title: "Team Innovation Workshop",
-      category: "Internal Event",
-      date: "January 2024",
-      location: "Sunderland Office",
-      description: "Quarterly innovation workshop where our team explores new AI technologies and methodologies.",
-      image: "workshop-2024",
-      type: "team"
-    },
-    {
-      title: "Healthcare AI Showcase",
-      category: "Demo",
-      date: "December 2023",
-      location: "Edinburgh, UK",
-      description: "Demonstrating our healthcare AI solutions at the National Healthcare Technology Conference.",
-      image: "healthcare-demo",
-      type: "demo"
-    },
-    {
-      title: "Award Ceremony",
-      category: "Recognition",
-      date: "November 2023",
-      location: "Birmingham, UK",
-      description: "Receiving the 'Best AI Innovation' award at the UK Tech Excellence Awards.",
-      image: "award-ceremony",
-      type: "award"
-    },
-    {
-      title: "University Collaboration",
-      category: "Partnership",
-      date: "October 2023",
-      location: "Newcastle University",
-      description: "Signing partnership agreement with Newcastle University for AI research collaboration.",
-      image: "university-partnership",
-      type: "partnership"
-    },
-    {
-      title: "Global AI Conference",
-      category: "Keynote",
-      date: "September 2023",
-      location: "San Francisco, USA",
-      description: "International keynote presentation on the future of workplace AI at Global AI Conference.",
-      image: "global-conference",
-      type: "event"
-    },
-    {
-      title: "Client Success Celebration",
-      category: "Milestone",
-      date: "August 2023",
-      location: "Virtual Event",
-      description: "Celebrating 50+ successful AI implementations with our valued clients worldwide.",
-      image: "success-celebration",
-      type: "milestone"
-    },
-    {
-      title: "Sunderland Tech Hub Opening",
-      category: "Office Launch",
-      date: "July 2023",
-      location: "Sunderland, UK",
-      description: "Grand opening of our expanded headquarters in Sunderland's tech district.",
-      image: "office-opening",
-      type: "company"
-    }
-  ];
+  const [galleries, setGalleries] = useState<GalleryType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const categories = ["All", "Conference", "Client Visit", "Demo", "Recognition", "Partnership", "Keynote", "Milestone"];
+  useEffect(() => {
+    fetchGalleries();
+  }, []);
+
+  const fetchGalleries = async () => {
+    try {
+      setIsLoading(true);
+      const data = await galleryService.getAllGalleries();
+      // Filter only published galleries
+      const published = data.filter(g => g.published);
+      setGalleries(published);
+    } catch (error) {
+      console.error("Error fetching galleries:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Get unique categories from galleries
+  const categories = ["All", ...Object.values(GalleryCategory).map(cat => cat.replace(/_/g, " "))];
+
+  // Filter galleries based on selected category
+  const filteredGalleries = selectedCategory === "All"
+    ? galleries
+    : galleries.filter(g => g.category.replace(/_/g, " ") === selectedCategory);
+
+  const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+    });
+  };
+
+  const getYouTubeEmbedUrl = (url: string) => {
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      const videoId = url.split("v=")[1]?.split("&")[0] || url.split("/").pop();
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return url;
+  };
 
   return (
     <AppLayout>
@@ -121,12 +82,13 @@ const Gallery = () => {
 
         {/* Categories Filter */}
         <div className="flex flex-wrap gap-2">
-          {categories.map((category, index) => (
+          {categories.map((category) => (
             <Button
-              key={index}
-              variant={index === 0 ? "default" : "outline"}
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
               className="hover:shadow-md transition-all"
+              onClick={() => setSelectedCategory(category)}
             >
               {category}
             </Button>
@@ -135,53 +97,103 @@ const Gallery = () => {
 
         {/* Gallery Grid */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-space font-bold">Recent Moments</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryItems.map((item, index) => (
-              <Card key={index} className="group hover-lift glass-surface border-border/50 overflow-hidden">
-                {/* Placeholder for image */}
-                <div className="h-64 bg-gradient-primary flex items-center justify-center text-primary-foreground relative overflow-hidden">
-                  <div className="text-center p-6">
-                    <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      {item.type === "event" && <Calendar className="h-8 w-8" />}
-                      {item.type === "project" && <Users className="h-8 w-8" />}
-                      {item.type === "team" && <Users className="h-8 w-8" />}
-                      {item.type === "demo" && <MapPin className="h-8 w-8" />}
-                      {item.type === "award" && <Award className="h-8 w-8" />}
-                      {item.type === "partnership" && <Users className="h-8 w-8" />}
-                      {item.type === "milestone" && <Award className="h-8 w-8" />}
-                      {item.type === "company" && <MapPin className="h-8 w-8" />}
-                    </div>
-                    <p className="text-sm opacity-75">Photo: {item.image}</p>
-                  </div>
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                </div>
-                
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge className="bg-gradient-primary text-primary-foreground">
-                      {item.category}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">{item.date}</span>
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold mb-2 group-hover:gradient-text transition-colors">
-                    {item.title}
-                  </h3>
-                  
-                  <div className="flex items-center text-sm text-muted-foreground mb-3">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {item.location}
-                  </div>
-                  
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {item.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-space font-bold">
+              {selectedCategory === "All" ? "All Gallery Items" : selectedCategory}
+            </h2>
+            <span className="text-muted-foreground text-sm">
+              {filteredGalleries.length} {filteredGalleries.length === 1 ? "item" : "items"}
+            </span>
           </div>
+
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : filteredGalleries.length === 0 ? (
+            <Card className="p-12 text-center glass-surface border-border/50">
+              <Camera className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No gallery items found</h3>
+              <p className="text-muted-foreground">
+                {selectedCategory === "All"
+                  ? "No items available yet. Check back soon!"
+                  : `No items in the "${selectedCategory}" category.`}
+              </p>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredGalleries.map((item) => (
+                <Card key={item._id} className="group hover-lift glass-surface border-border/50 overflow-hidden">
+                  {/* Media Display - Image or Video */}
+                  <div className="h-64 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
+                    {item.media_type === "video" ? (
+                      <div className="relative h-full group">
+                        <iframe
+                          src={getYouTubeEmbedUrl(item.image_path)}
+                          title={item.title}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                        <div className="absolute top-2 left-2">
+                          <Badge className="bg-black/70 text-white border-0">
+                            <Play className="h-3 w-3 mr-1" />
+                            Video
+                          </Badge>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative h-full">
+                        <img
+                          src={galleryService.getImageUrl(item.image_path)}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            target.style.display = "none";
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    )}
+                  </div>
+
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <Badge className="bg-gradient-primary text-primary-foreground">
+                        {item.category.replace(/_/g, " ")}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">{formatDate(item.date)}</span>
+                    </div>
+
+                    <h3 className="text-lg font-semibold mb-2 group-hover:gradient-text transition-colors">
+                      {item.title}
+                    </h3>
+
+                    {item.location && (
+                      <div className="flex items-center text-sm text-muted-foreground mb-3">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {item.location}
+                      </div>
+                    )}
+
+                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                      {item.content}
+                    </p>
+
+                    {item.featured && (
+                      <div className="mt-3">
+                        <Badge variant="secondary" className="text-xs">
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          Featured
+                        </Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Stats Section */}
