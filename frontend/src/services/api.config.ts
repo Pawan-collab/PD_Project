@@ -35,6 +35,20 @@ export const API_ENDPOINTS = {
     LOGOUT: '/admin/logout',
     PROFILE: '/admin/profile',
   },
+
+  // Feedback endpoints
+  FEEDBACK: {
+    CREATE: '/feedback/create',
+    GET_ALL: '/feedback',
+    GET_RECENT: '/feedback/recent',
+    GET_BY_ID: (id: string) => `/feedback/${id}`,
+    GET_BY_NAME: (name: string) => `/feedback/name/${name}`,
+    GET_BY_COMPANY: (company: string) => `/feedback/company/${company}`,
+    GET_APPROVED: '/feedback/approved',
+    UPDATE: (id: string) => `/feedback/${id}`,
+    DELETE: (id: string) => `/feedback/${id}`,
+    APPROVE: (id: string) => `/feedback/${id}/approve`,
+  },
 } as const;
 
 /**
