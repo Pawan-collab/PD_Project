@@ -8,7 +8,7 @@ const cors = require("cors");
 const connectToDB = require("./db/db");
 
 const adminRouter = require("./routes/adminRoutes");
-// const contactRouter = require("./routes/contact.routes");
+const contactRouter = require("./routes/contactRoutes");
 // const feedbackRouter = require("./routes/feedback.routes");
 // const chatbotRouter = require("./routes/chatBot.routes");
 // const postRouter = require("./routes/post.routes");
@@ -23,16 +23,21 @@ const app = express();
 
 connectToDB();
 
-app.use(cookieParser());
-
+// CORS Configuration - Must be before other middleware
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
-app.use(
-  cors({
-    origin: CLIENT_ORIGIN,
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: CLIENT_ORIGIN,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600, // Cache preflight request for 10 minutes
+  optionsSuccessStatus: 204, // Some legacy browsers choke on 204
+};
 
+app.use(cors(corsOptions));
+
+app.use(cookieParser());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,7 +51,7 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/admin", adminRouter);
-// app.use("/contact", contactRouter);
+app.use("/contact", contactRouter);
 // app.use("/feedback", feedbackRouter);
 // app.use("/posts", postRouter);
 // app.use("/chatbot", chatbotRouter);

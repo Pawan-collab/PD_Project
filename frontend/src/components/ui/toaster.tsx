@@ -6,6 +6,7 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
+  ToastProgressBar,
 } from "@/components/ui/toast"
 
 export function Toaster() {
@@ -13,9 +14,9 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
+      {toasts.map(function ({ id, title, description, action, duration, ...props }) {
         return (
-          <Toast key={id} {...props}>
+          <Toast key={id} duration={duration || 5000} {...props}>
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (
@@ -24,6 +25,7 @@ export function Toaster() {
             </div>
             {action}
             <ToastClose />
+            <ToastProgressBar duration={duration || 5000} />
           </Toast>
         )
       })}

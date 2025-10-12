@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,50 +8,68 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Mail, Clock, Sparkles, MessageSquare, Send } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Sparkles, MessageSquare, Send, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { contactService } from "@/services/contact.service";
+import { ApiError } from "@/services/api.service";
+import { contactFormSchema, contactFormDefaultValues, type ContactFormValues } from "@/schemas/contact.schema";
 
 const Contact = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    country: "",
-    jobTitle: "",
-    jobDetails: ""
+
+  // Initialize React Hook Form with Yup validation
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ContactFormValues>({
+    resolver: yupResolver(contactFormSchema),
+    defaultValues: contactFormDefaultValues,
+    mode: "onBlur", // Validate on blur for better UX
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Here you would typically send the data to your backend
-    console.log("Form submitted:", formData);
-    
-    toast({
-      title: "Request Submitted Successfully!",
-      description: "Our team will contact you within 24 hours to discuss your requirements.",
-    });
+  // Form submission handler
+  const onSubmit = async (data: ContactFormValues) => {
+    try {
+      // Submit form data to backend
+      await contactService.createContact(data);
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      country: "",
-      jobTitle: "",
-      jobDetails: ""
-    });
-  };
+      toast({
+        title: "Request Submitted Successfully!",
+        description: "Our team will contact you within 24 hours to discuss your requirements.",
+      });
 
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+      // Reset form on success
+      reset();
+    } catch (error) {
+      console.error("Contact form submission error:", error);
+
+      let errorMessage = "An unexpected error occurred. Please try again.";
+
+      if (error instanceof ApiError) {
+        errorMessage = error.message;
+
+        // Handle validation errors from backend
+        if (error.errors && error.errors.length > 0) {
+          const validationMessages = error.errors
+            .map((err: any) => err.msg || err.message)
+            .join(", ");
+          errorMessage = validationMessages || errorMessage;
+        }
+      }
+
+      toast({
+        title: "Submission Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
   };
 
   const countries = [
-    "United Kingdom", "United States", "Canada", "Australia", "Germany", 
+    "United Kingdom", "United States", "Canada", "Australia", "Germany",
     "France", "Netherlands", "Sweden", "Norway", "Denmark", "Other"
   ];
 
@@ -83,7 +102,7 @@ const Contact = () => {
 
         {/* Contact Form & Info */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <Card className="glass-surface border-border/50">
@@ -94,96 +113,174 @@ const Contact = () => {
                 </p>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Name Field */}
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
                       <Input
                         id="name"
-                        value={formData.name}
-                        onChange={(e) => handleChange("name", e.target.value)}
+                        {...register("name")}
                         placeholder="Enter your full name"
-                        required
+                        disabled={isSubmitting}
+                        className={errors.name ? "border-red-500" : ""}
                       />
+                      {errors.name && (
+                        <p className="text-sm text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-4 h-4" />
+                          {errors.name.message}
+                        </p>
+                      )}
                     </div>
+
+                    {/* Email Field */}
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address *</Label>
                       <Input
                         id="email"
                         type="email"
-                        value={formData.email}
-                        onChange={(e) => handleChange("email", e.target.value)}
+                        {...register("email")}
                         placeholder="Enter your email"
-                        required
+                        disabled={isSubmitting}
+                        className={errors.email ? "border-red-500" : ""}
                       />
+                      {errors.email && (
+                        <p className="text-sm text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-4 h-4" />
+                          {errors.email.message}
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Phone Field */}
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
+                      <Label htmlFor="phone">Phone Number *</Label>
                       <Input
                         id="phone"
-                        value={formData.phone}
-                        onChange={(e) => handleChange("phone", e.target.value)}
-                        placeholder="Enter your phone number"
+                        {...register("phone")}
+                        placeholder="Enter 10-digit phone number"
+                        disabled={isSubmitting}
+                        className={errors.phone ? "border-red-500" : ""}
+                        maxLength={10}
                       />
+                      {errors.phone && (
+                        <p className="text-sm text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-4 h-4" />
+                          {errors.phone.message}
+                        </p>
+                      )}
                     </div>
+
+                    {/* Company Field */}
                     <div className="space-y-2">
                       <Label htmlFor="company">Company Name *</Label>
                       <Input
                         id="company"
-                        value={formData.company}
-                        onChange={(e) => handleChange("company", e.target.value)}
+                        {...register("company")}
                         placeholder="Enter your company name"
-                        required
+                        disabled={isSubmitting}
+                        className={errors.company ? "border-red-500" : ""}
                       />
+                      {errors.company && (
+                        <p className="text-sm text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-4 h-4" />
+                          {errors.company.message}
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Country Field */}
                     <div className="space-y-2">
                       <Label htmlFor="country">Country *</Label>
-                      <Select value={formData.country} onValueChange={(value) => handleChange("country", value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your country" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {countries.map((country) => (
-                            <SelectItem key={country} value={country}>
-                              {country}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Controller
+                        name="country"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            disabled={isSubmitting}
+                          >
+                            <SelectTrigger className={errors.country ? "border-red-500" : ""}>
+                              <SelectValue placeholder="Select your country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {countries.map((country) => (
+                                <SelectItem key={country} value={country}>
+                                  {country}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                      {errors.country && (
+                        <p className="text-sm text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-4 h-4" />
+                          {errors.country.message}
+                        </p>
+                      )}
                     </div>
+
+                    {/* Job Title Field */}
                     <div className="space-y-2">
                       <Label htmlFor="jobTitle">Job Title *</Label>
                       <Input
                         id="jobTitle"
-                        value={formData.jobTitle}
-                        onChange={(e) => handleChange("jobTitle", e.target.value)}
+                        {...register("jobTitle")}
                         placeholder="Enter your job title"
-                        required
+                        disabled={isSubmitting}
+                        className={errors.jobTitle ? "border-red-500" : ""}
                       />
+                      {errors.jobTitle && (
+                        <p className="text-sm text-red-500 flex items-center gap-1">
+                          <AlertCircle className="w-4 h-4" />
+                          {errors.jobTitle.message}
+                        </p>
+                      )}
                     </div>
                   </div>
 
+                  {/* Message Field */}
                   <div className="space-y-2">
                     <Label htmlFor="jobDetails">Project Details *</Label>
                     <Textarea
                       id="jobDetails"
-                      value={formData.jobDetails}
-                      onChange={(e) => handleChange("jobDetails", e.target.value)}
-                      placeholder="Please describe your project requirements, goals, and any specific challenges you're facing..."
+                      {...register("jobDetails")}
+                      placeholder="Please describe your project requirements, goals, and any specific challenges you're facing... (minimum 10 characters)"
                       rows={6}
-                      required
+                      disabled={isSubmitting}
+                      className={errors.jobDetails ? "border-red-500" : ""}
                     />
+                    {errors.jobDetails && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-4 h-4" />
+                        {errors.jobDetails.message}
+                      </p>
+                    )}
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full bg-gradient-primary hover:shadow-glow group">
-                    <Send className="w-4 h-4 mr-2" />
-                    Submit Requirements
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full bg-gradient-primary hover:shadow-glow group"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Submit Requirements
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>
@@ -275,7 +372,7 @@ const Contact = () => {
                   Get expert consultation within 24 hours of your inquiry submission.
                 </p>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
                   <Phone className="h-8 w-8 text-primary-foreground" />
@@ -285,7 +382,7 @@ const Contact = () => {
                   Speak directly with AI specialists who understand your industry challenges.
                 </p>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
                   <Mail className="h-8 w-8 text-primary-foreground" />

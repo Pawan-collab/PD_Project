@@ -1,25 +1,39 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Brain, 
-  Zap, 
-  Shield, 
-  Lightbulb, 
-  Cog, 
+import {
+  Brain,
+  Zap,
+  Shield,
+  Lightbulb,
+  Cog,
   MessageSquare,
   ArrowRight,
   Sparkles,
   Target,
-  Users,
   Clock,
   CheckCircle2
 } from "lucide-react";
 
 const Solutions = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
+      }
+    }
+  }, [location]);
   const solutions = [
     {
+      id: "ai-virtual-assistant",
       icon: Brain,
       title: "AI Virtual Assistant",
       description: "Intelligent conversational AI that handles complex queries and provides real-time solutions with natural language understanding.",
@@ -29,15 +43,17 @@ const Solutions = () => {
       status: "live"
     },
     {
+      id: "rapid-prototyping",
       icon: Zap,
       title: "Rapid Prototyping Engine",
       description: "Accelerated development platform that transforms ideas into working prototypes in days, not months.",
       features: ["Quick Turnaround", "Cost-effective", "Iterative Design", "Market Validation"],
       badge: "Featured",
-      pricing: "From $199/mo", 
+      pricing: "From $199/mo",
       status: "live"
     },
     {
+      id: "digital-innovation",
       icon: MessageSquare,
       title: "Employee Experience Platform",
       description: "Comprehensive solution that enhances workplace productivity and satisfaction through intelligent automation.",
@@ -47,6 +63,7 @@ const Solutions = () => {
       status: "beta"
     },
     {
+      id: "innovation-consulting",
       icon: Lightbulb,
       title: "Innovation Consulting",
       description: "Strategic AI guidance to help organizations identify opportunities and implement cutting-edge solutions.",
@@ -56,6 +73,7 @@ const Solutions = () => {
       status: "live"
     },
     {
+      id: "process-automation",
       icon: Cog,
       title: "Process Automation Suite",
       description: "Intelligent automation that eliminates manual tasks and reduces operational overhead significantly.",
@@ -65,8 +83,9 @@ const Solutions = () => {
       status: "live"
     },
     {
+      id: "ai-security",
       icon: Shield,
-      title: "AI Security Framework", 
+      title: "AI Security Framework",
       description: "Advanced threat detection and response system powered by machine learning algorithms.",
       features: ["Threat Detection", "Anomaly Analysis", "Predictive Security", "Compliance Ready"],
       badge: "Enterprise",
@@ -146,7 +165,7 @@ const Solutions = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {solutions.map((solution, index) => (
-              <Card key={index} className="group hover-lift glass-surface border-border/50 relative overflow-hidden">
+              <Card key={index} id={solution.id} className="group hover-lift glass-surface border-border/50 relative overflow-hidden scroll-mt-24">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-4">
                     <div className="p-3 bg-gradient-primary rounded-xl group-hover:shadow-glow transition-all">

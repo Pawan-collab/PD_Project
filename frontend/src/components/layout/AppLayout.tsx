@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
-import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import ChatBot from "@/components/ChatBot";
 import { cn } from "@/lib/utils";
 
 interface AppLayoutProps {
@@ -9,11 +11,13 @@ interface AppLayoutProps {
 
 const AppLayout = ({ children, className }: AppLayoutProps) => {
   return (
-    <div className="dashboard-grid">
-      <Sidebar />
-      <main className={cn("main-content", className)}>
+    <div className="min-h-screen bg-background neural-bg">
+      <Navbar />
+      <main className={cn("max-w-7xl mx-auto px-6 py-12", className)}>
         {children}
       </main>
+      <Footer />
+      <ChatBot />
     </div>
   );
 };
