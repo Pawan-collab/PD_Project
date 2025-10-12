@@ -9,7 +9,7 @@ const connectToDB = require("./db/db");
 
 const adminRouter = require("./routes/adminRoutes");
 const contactRouter = require("./routes/contactRoutes");
-// const feedbackRouter = require("./routes/feedback.routes");
+const feedbackRouter = require("./routes/feedbackRoutes");
 // const chatbotRouter = require("./routes/chatBot.routes");
 // const postRouter = require("./routes/post.routes");
 // const industryRouter = require("./routes/industry.routes");
@@ -52,7 +52,7 @@ app.get("/", (_req, res) => {
 
 app.use("/admin", adminRouter);
 app.use("/contact", contactRouter);
-// app.use("/feedback", feedbackRouter);
+app.use("/feedback", feedbackRouter);
 // app.use("/posts", postRouter);
 // app.use("/chatbot", chatbotRouter);
 // app.use("/industries", industryRouter);
