@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Mail, Clock, Sparkles, MessageSquare, Send, Loader2, AlertCircle } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Sparkles, Send, Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { contactService } from "@/services/contact.service";
 import { ApiError } from "@/services/api.service";
@@ -77,41 +77,88 @@ const Contact = () => {
     <AppLayout>
       <div className="space-y-8">
         {/* Header */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <Badge className="mb-4 bg-gradient-primary text-primary-foreground">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Connect With Us
-            </Badge>
-            <h1 className="text-3xl font-space font-bold">Get in Touch</h1>
-            <p className="text-muted-foreground">
-              Ready to transform your business with AI? Share your requirements and let our experts design a custom solution.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Live Chat
-            </Button>
-            <Button variant="outline" size="sm">
-              <Phone className="w-4 h-4 mr-2" />
-              Schedule Call
-            </Button>
-          </div>
+        <div className="text-center max-w-3xl mx-auto">
+          <Badge className="mb-4 bg-gradient-primary text-primary-foreground">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Connect With Us
+          </Badge>
+          <h1 className="text-4xl font-space font-bold mb-4">Get in Touch</h1>
+          <p className="text-muted-foreground text-lg">
+            Ready to transform your business with AI? Share your requirements and let our experts design a custom solution tailored for you.
+          </p>
         </div>
 
-        {/* Contact Form & Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Contact Information Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="glass-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg">
+                <MapPin className="mr-2 h-5 w-5 text-primary" />
+                Our Location
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                AI Solutions<br />
+                Sunderland, United Kingdom<br />
+                Serving clients globally
+              </p>
+            </CardContent>
+          </Card>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <Card className="glass-surface border-border/50">
-              <CardHeader>
-                <CardTitle className="text-2xl">Submit Your Requirements</CardTitle>
-                <p className="text-muted-foreground">
-                  No account required. Just tell us about your project and we'll get back to you with a tailored solution.
-                </p>
-              </CardHeader>
+          <Card className="glass-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg">
+                <Clock className="mr-2 h-5 w-5 text-primary" />
+                Response Time
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                We respond to all inquiries within 24 hours.<br />
+                For urgent requests, expect a response within 4 hours during business days.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-surface border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg">
+                <Mail className="mr-2 h-5 w-5 text-primary" />
+                Direct Contact
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <p className="font-medium text-sm">General Inquiries</p>
+                <a href="mailto:info@aisolutionhub.co.uk" className="text-muted-foreground text-sm hover:text-primary transition-colors">
+                  info@aisolutionhub.co.uk
+                </a>
+              </div>
+              <div>
+                <p className="font-medium text-sm">Technical Support</p>
+                <a href="mailto:support@aisolutionhub.co.uk" className="text-muted-foreground text-sm hover:text-primary transition-colors">
+                  support@aisolutionhub.co.uk
+                </a>
+              </div>
+              <div>
+                <p className="font-medium text-sm">Partnerships</p>
+                <a href="mailto:partners@aisolutionhub.co.uk" className="text-muted-foreground text-sm hover:text-primary transition-colors">
+                  partners@aisolutionhub.co.uk
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Contact Form - Full Width */}
+        <Card className="glass-surface border-border/50">
+          <CardHeader>
+            <CardTitle className="text-2xl">Submit Your Requirements</CardTitle>
+            <p className="text-muted-foreground">
+              No account required. Just tell us about your project and we'll get back to you with a tailored solution.
+            </p>
+          </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -285,77 +332,27 @@ const Contact = () => {
                 </form>
               </CardContent>
             </Card>
-          </div>
 
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <Card className="glass-surface border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MapPin className="mr-2 h-5 w-5 text-primary" />
-                  Our Location
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  AI SOlutions<br />
-                  Sunderland, United Kingdom<br />
-                  Serving clients globally
+        {/* Need Immediate Assistance */}
+        <Card className="bg-gradient-primary text-primary-foreground border-0 shadow-glow">
+          <CardContent className="p-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-xl font-bold mb-2 flex items-center justify-center md:justify-start">
+                  <Phone className="mr-2 h-6 w-6" />
+                  Need Immediate Assistance?
+                </h3>
+                <p className="text-primary-foreground/90 mb-2">
+                  For urgent technical issues or time-sensitive projects, our priority support team is ready to help.
                 </p>
-              </CardContent>
-            </Card>
-
-            <Card className="glass-surface border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Clock className="mr-2 h-5 w-5 text-primary" />
-                  Response Time
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  We respond to all inquiries within 24 hours.<br />
-                  For urgent requests, expect a response within 4 hours during business days.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="glass-surface border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Mail className="mr-2 h-5 w-5 text-primary" />
-                  Direct Contact
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <p className="font-medium">General Inquiries</p>
-                  <p className="text-muted-foreground text-sm">info@aisolutionhub.co.uk</p>
-                </div>
-                <div>
-                  <p className="font-medium">Technical Support</p>
-                  <p className="text-muted-foreground text-sm">support@aisolutionhub.co.uk</p>
-                </div>
-                <div>
-                  <p className="font-medium">Partnerships</p>
-                  <p className="text-muted-foreground text-sm">partners@aisolutionhub.co.uk</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-primary text-primary-foreground border-0 shadow-glow">
-              <CardContent className="p-6">
-                <h3 className="font-bold mb-2">Need Immediate Assistance?</h3>
-                <p className="text-primary-foreground/90 text-sm mb-4">
-                  For urgent technical issues or time-sensitive projects, our priority support team is available.
-                </p>
-                <Button variant="secondary" size="sm" className="w-full">
-                  Priority Support
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+              <div className="text-center md:text-right">
+                <p className="text-lg font-bold mb-1">+44 123 456 7890</p>
+                <p className="text-sm text-primary-foreground/80">Available Mon-Fri, 9AM-6PM GMT</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Features Section */}
         <Card className="glass-surface border-border/50">

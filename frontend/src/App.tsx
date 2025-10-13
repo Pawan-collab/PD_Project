@@ -25,6 +25,7 @@ import AdminArticles from "./pages/admin/AdminArticles";
 import AdminProjects from "./pages/admin/AdminProjects";
 import AdminMedia from "./pages/admin/AdminMedia";
 import AdminSolutions from "./pages/admin/AdminSolutions";
+import AdminEvents from "./pages/admin/AdminEvents";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Cookies from "./pages/Cookies";
@@ -115,6 +116,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <AdminSolutions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/events"
+            element={
+              <ProtectedRoute>
+                <AdminEvents />
               </ProtectedRoute>
             }
           />

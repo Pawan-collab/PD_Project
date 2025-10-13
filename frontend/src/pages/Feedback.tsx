@@ -332,16 +332,6 @@ const Feedback = () => {
               Real testimonials from real businesses across diverse industries.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <Star className="w-4 h-4 mr-2" />
-              All Reviews
-            </Button>
-            <Button variant="outline" size="sm">
-              <Building className="w-4 h-4 mr-2" />
-              By Industry
-            </Button>
-          </div>
         </div>
 
         {/* Stats Section */}

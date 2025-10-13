@@ -17,7 +17,7 @@ const galleryRouter = require("./routes/galleryRoutes");
 // const chatbotRouter = require("./routes/chatBot.routes");
 // const industryRouter = require("./routes/industry.routes");
 // const solutionRouter = require("./routes/solution.routes");
-// const eventRouter = require("./routes/event.route");
+const eventRouter = require("./routes/eventRoutes");
 // const eventRegistrationRouter = require("./routes/eventRegistration.routes");
 const solutionRouter = require("./routes/solutionRoutes");
 
@@ -62,7 +62,7 @@ app.use("/gallery", galleryRouter);
 // app.use("/chatbot", chatbotRouter);
 // app.use("/industries", industryRouter);
 // app.use("/solutions", solutionRouter);
-// app.use("/events", eventRouter);
+app.use("/events", eventRouter);
 // app.use("/eventRegistrations", eventRegistrationRouter);
 app.use("/solutions", solutionRouter);
 

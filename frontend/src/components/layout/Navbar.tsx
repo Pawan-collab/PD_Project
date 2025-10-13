@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Hexagon, Zap, Menu, X, ChevronDown, Search } from "lucide-react";
+import { Hexagon, Zap, Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 const Navbar = () => {
@@ -76,10 +76,10 @@ const Navbar = () => {
                 )} />
               </button>
 
-              {/* Dropdown Menu - Fixed positioning */}
+              {/* Dropdown Menu - Fixed positioning with background */}
               {openDropdown === key && (
                 <div className="absolute top-full left-0 pt-1 w-64">
-                  <div className="glass rounded-lg border border-primary/20 shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="bg-background/95 backdrop-blur-xl rounded-lg border border-primary/20 shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                     {menu.items.map((item) => (
                       <Link
                         key={item.path}
@@ -102,22 +102,6 @@ const Navbar = () => {
               )}
             </div>
           ))}
-
-          {/* Direct Link */}
-          <Link
-            to="/home"
-            className={cn(
-              "px-4 py-2 text-foreground/80 hover:text-primary transition-colors font-rajdhani font-medium rounded-md hover:bg-primary/5",
-              location.pathname === "/home" && "text-primary bg-primary/5"
-            )}
-          >
-            Home
-          </Link>
-
-          {/* Search Icon */}
-          <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-            <Search className="w-5 h-5" />
-          </Button>
 
           {/* CTAs */}
           <Link to="/contact">
@@ -142,19 +126,8 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden mt-4 glass rounded-lg border border-primary/20 p-4 animate-slide-neon">
+        <div className="lg:hidden mt-4 bg-background/95 backdrop-blur-xl rounded-lg border border-primary/20 p-4 animate-slide-neon">
           <div className="flex flex-col space-y-2">
-            <Link
-              to="/home"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={cn(
-                "px-4 py-2 rounded-md text-foreground/80 hover:text-primary hover:bg-primary/10 transition-colors font-rajdhani font-medium",
-                location.pathname === "/home" && "text-primary bg-primary/10"
-              )}
-            >
-              Home
-            </Link>
-
             {Object.entries(menuStructure).map(([key, menu]) => (
               <div key={key} className="space-y-1">
                 <button
@@ -170,7 +143,7 @@ const Navbar = () => {
                   />
                 </button>
                 {openDropdown === key && (
-                  <div className="pl-4 space-y-1">
+                  <div className="pl-4 space-y-1 bg-muted/30 rounded-lg p-2">
                     {menu.items.map((item) => (
                       <Link
                         key={item.path}

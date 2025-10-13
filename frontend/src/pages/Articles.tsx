@@ -138,16 +138,6 @@ const Articles = () => {
               workplace transformation.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <BookOpen className="w-4 h-4 mr-2" />
-              Categories
-            </Button>
-            <Button variant="outline" size="sm">
-              <Users className="w-4 h-4 mr-2" />
-              Authors
-            </Button>
-          </div>
         </div>
 
         {/* Categories Filter */}
@@ -256,16 +246,6 @@ const Articles = () => {
                         </div>
                       </div>
                     </div>
-
-                    <Card className="bg-gradient-primary p-6 text-primary-foreground border-0">
-                      <h4 className="font-semibold mb-2">Stay Updated</h4>
-                      <p className="text-sm text-primary-foreground/90 mb-4">
-                        Get the latest AI insights delivered to your inbox.
-                      </p>
-                      <Button variant="secondary" size="sm" className="w-full">
-                        Subscribe to Newsletter
-                      </Button>
-                    </Card>
                   </div>
                 </div>
               </CardContent>

@@ -16,6 +16,7 @@ import {
   MessageCircle,
   PenTool,
   Image as ImageIcon,
+  Calendar,
   Settings,
   Power,
   Menu,
@@ -45,6 +46,7 @@ const navigation: NavItem[] = [
   { name: "Articles", href: "/admin/articles", icon: PenTool },
   { name: "Projects", href: "/admin/projects", icon: FolderKanban },
   { name: "Solutions", href: "/admin/solutions", icon: TrendingUp },
+  { name: "Events", href: "/admin/events", icon: Calendar },
   { name: "Media", href: "/admin/media", icon: ImageIcon },
 ];
 

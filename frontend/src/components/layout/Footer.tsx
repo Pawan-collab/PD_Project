@@ -21,13 +21,6 @@ const Footer = () => {
   };
 
   const footerLinks = {
-    product: [
-      { name: "AI Virtual Assistant", path: "/solutions#ai-virtual-assistant" },
-      { name: "Rapid Prototyping", path: "/solutions#rapid-prototyping" },
-      { name: "Digital Innovation", path: "/solutions#digital-innovation" },
-      { name: "Process Automation", path: "/solutions#process-automation" },
-      { name: "All Solutions", path: "/solutions" },
-    ],
     company: [
       { name: "About Us", path: "/about" },
       { name: "Projects", path: "/projects" },
@@ -89,8 +82,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Main Footer Content - 5 Columns */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12">
+        {/* Main Footer Content - 4 Columns */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
           {/* Company Info */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1 space-y-4">
             <Link to="/" className="flex items-center gap-2 group">
@@ -138,24 +131,6 @@ const Footer = () => {
                 <Phone className="w-4 h-4 text-accent" />
                 <span>+44 123 456 7890</span>
               </div>
-            </div>
-          </div>
-
-          {/* Product Links */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-foreground font-space text-sm">
-              Product
-            </h4>
-            <div className="space-y-2">
-              {footerLinks.product.map((link, index) => (
-                <Link
-                  key={`product-${link.name}-${index}`}
-                  to={link.path}
-                  className="block text-sm text-muted-foreground hover:text-primary transition-all hover:translate-x-1"
-                >
-                  {link.name}
-                </Link>
-              ))}
             </div>
           </div>
 

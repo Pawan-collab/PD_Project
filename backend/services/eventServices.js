@@ -1,4 +1,4 @@
-const Event = require("../models/events.model");
+const Event = require("../models/eventModels");
 // Create a new event entry
 module.exports.createEvent = async (data) => {
   const event = new Event(data);
@@ -10,12 +10,12 @@ module.exports.getAllEvents = async () => {
 };
 module.exports.getRecentUpcomingEvents = async (limit = 4) => {
   return await Event.find({ kind: "upcoming", published: true, isActive: true })
-    .sort({ date: 1 }) 
+    .sort({ date: 1 })
     .limit(limit);
 };
 module.exports.getRecentPastEvents = async (limit = 4) => {
   return await Event.find({ kind: "past", published: true, isActive: true })
-    .sort({ date: -1 }) 
+    .sort({ date: -1 })
     .limit(limit);
 };
 // Get a single event by its id

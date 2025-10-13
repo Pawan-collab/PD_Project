@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import {
 
 const Solutions = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (location.hash) {
@@ -221,7 +222,10 @@ const Solutions = () => {
                         </Badge>
                       </div>
 
-                      <Button className="w-full bg-gradient-primary hover:shadow-glow group">
+                      <Button
+                        className="w-full bg-gradient-primary hover:shadow-glow group"
+                        onClick={() => navigate('/contact')}
+                      >
                         Get Started
                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </Button>
@@ -281,11 +285,17 @@ const Solutions = () => {
               <Button
                 size="lg"
                 className="bg-gradient-primary hover:shadow-glow"
+                onClick={() => navigate('/contact')}
               >
                 <MessageSquare className="w-5 h-5 mr-2" />
                 Schedule Consultation
               </Button>
-              <Button variant="outline" size="lg" className="hover-lift">
+              <Button
+                variant="outline"
+                size="lg"
+                className="hover-lift"
+                onClick={() => navigate('/projects')}
+              >
                 <Clock className="w-5 h-5 mr-2" />
                 View Case Studies
               </Button>

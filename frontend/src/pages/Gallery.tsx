@@ -4,8 +4,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Calendar, Users, MapPin, Award, Sparkles, Camera, Images, Loader2, Play } from "lucide-react";
-import { galleryService, Gallery as GalleryType, GalleryCategory } from "@/services/gallery.service";
+import {
+  ArrowRight,
+  Calendar,
+  Users,
+  MapPin,
+  Award,
+  Sparkles,
+  Camera,
+  Images,
+  Loader2,
+  Play,
+} from "lucide-react";
+import {
+  galleryService,
+  Gallery as GalleryType,
+  GalleryCategory,
+} from "@/services/gallery.service";
 
 const Gallery = () => {
   const [galleries, setGalleries] = useState<GalleryType[]>([]);
@@ -21,7 +36,7 @@ const Gallery = () => {
       setIsLoading(true);
       const data = await galleryService.getAllGalleries();
       // Filter only published galleries
-      const published = data.filter(g => g.published);
+      const published = data.filter((g) => g.published);
       setGalleries(published);
     } catch (error) {
       console.error("Error fetching galleries:", error);
@@ -31,12 +46,18 @@ const Gallery = () => {
   };
 
   // Get unique categories from galleries
-  const categories = ["All", ...Object.values(GalleryCategory).map(cat => cat.replace(/_/g, " "))];
+  const categories = [
+    "All",
+    ...Object.values(GalleryCategory).map((cat) => cat.replace(/_/g, " ")),
+  ];
 
   // Filter galleries based on selected category
-  const filteredGalleries = selectedCategory === "All"
-    ? galleries
-    : galleries.filter(g => g.category.replace(/_/g, " ") === selectedCategory);
+  const filteredGalleries =
+    selectedCategory === "All"
+      ? galleries
+      : galleries.filter(
+          (g) => g.category.replace(/_/g, " ") === selectedCategory
+        );
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -65,18 +86,9 @@ const Gallery = () => {
             </Badge>
             <h1 className="text-3xl font-space font-bold">Photo Gallery</h1>
             <p className="text-muted-foreground">
-              Moments from our journey - conferences, achievements, and milestone celebrations.
+              Moments from our journey - conferences, achievements, and
+              milestone celebrations.
             </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <Camera className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm">
-              <Images className="w-4 h-4 mr-2" />
-              View All
-            </Button>
           </div>
         </div>
 
@@ -99,10 +111,13 @@ const Gallery = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-space font-bold">
-              {selectedCategory === "All" ? "All Gallery Items" : selectedCategory}
+              {selectedCategory === "All"
+                ? "All Gallery Items"
+                : selectedCategory}
             </h2>
             <span className="text-muted-foreground text-sm">
-              {filteredGalleries.length} {filteredGalleries.length === 1 ? "item" : "items"}
+              {filteredGalleries.length}{" "}
+              {filteredGalleries.length === 1 ? "item" : "items"}
             </span>
           </div>
 
@@ -113,7 +128,9 @@ const Gallery = () => {
           ) : filteredGalleries.length === 0 ? (
             <Card className="p-12 text-center glass-surface border-border/50">
               <Camera className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No gallery items found</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                No gallery items found
+              </h3>
               <p className="text-muted-foreground">
                 {selectedCategory === "All"
                   ? "No items available yet. Check back soon!"
@@ -123,7 +140,10 @@ const Gallery = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredGalleries.map((item) => (
-                <Card key={item._id} className="group hover-lift glass-surface border-border/50 overflow-hidden">
+                <Card
+                  key={item._id}
+                  className="group hover-lift glass-surface border-border/50 overflow-hidden"
+                >
                   {/* Media Display - Image or Video */}
                   <div className="h-64 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
                     {item.media_type === "video" ? (
@@ -163,7 +183,9 @@ const Gallery = () => {
                       <Badge className="bg-gradient-primary text-primary-foreground">
                         {item.category.replace(/_/g, " ")}
                       </Badge>
-                      <span className="text-sm text-muted-foreground">{formatDate(item.date)}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {formatDate(item.date)}
+                      </span>
                     </div>
 
                     <h3 className="text-lg font-semibold mb-2 group-hover:gradient-text transition-colors">
@@ -199,7 +221,9 @@ const Gallery = () => {
         {/* Stats Section */}
         <Card className="glass-surface border-border/50">
           <CardContent className="p-8">
-            <h2 className="text-2xl font-space font-bold mb-8 text-center">Our Impact in Numbers</h2>
+            <h2 className="text-2xl font-space font-bold mb-8 text-center">
+              Our Impact in Numbers
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="text-center">
@@ -209,15 +233,17 @@ const Gallery = () => {
                 <div className="text-3xl font-bold gradient-text mb-2">15+</div>
                 <div className="text-muted-foreground">Industry Awards</div>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-primary-foreground" />
                 </div>
-                <div className="text-3xl font-bold gradient-text mb-2">100+</div>
+                <div className="text-3xl font-bold gradient-text mb-2">
+                  100+
+                </div>
                 <div className="text-muted-foreground">Speaking Events</div>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapPin className="h-8 w-8 text-primary-foreground" />
@@ -225,12 +251,14 @@ const Gallery = () => {
                 <div className="text-3xl font-bold gradient-text mb-2">25+</div>
                 <div className="text-muted-foreground">Countries Visited</div>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
                   <Calendar className="h-8 w-8 text-primary-foreground" />
                 </div>
-                <div className="text-3xl font-bold gradient-text mb-2">200+</div>
+                <div className="text-3xl font-bold gradient-text mb-2">
+                  200+
+                </div>
                 <div className="text-muted-foreground">Events Attended</div>
               </div>
             </div>
@@ -243,15 +271,19 @@ const Gallery = () => {
           <CardContent className="relative p-8 text-center">
             <Camera className="w-12 h-12 text-primary mx-auto mb-4 animate-pulse-glow" />
             <h2 className="text-2xl font-space font-bold mb-4">
-              Want to Be Part of Our <span className="gradient-text">Story?</span>
+              Want to Be Part of Our{" "}
+              <span className="gradient-text">Story?</span>
             </h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Join us at upcoming events, invite us to speak at your conference, 
+              Join us at upcoming events, invite us to speak at your conference,
               or partner with us to create the next chapter in AI innovation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/events">
-                <Button size="lg" className="bg-gradient-primary hover:shadow-glow">
+                <Button
+                  size="lg"
+                  className="bg-gradient-primary hover:shadow-glow"
+                >
                   View Upcoming Events
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>

@@ -105,6 +105,27 @@ class ProjectService {
   }
 
   /**
+   * Get featured projects for landing page
+   */
+  async getFeaturedProjects(limit: number = 3): Promise<Project[]> {
+    try {
+      const allProjects = await this.getActiveProjects();
+
+      // Filter for featured projects and limit the results
+      const featuredProjects = allProjects
+        .filter(project => project.badge === "Featured" && project.isActive)
+        .slice(0, limit);
+
+      return featuredProjects;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError("Failed to fetch featured projects");
+    }
+  }
+
+  /**
    * Get project by ID
    */
   async getProjectById(id: string): Promise<Project> {
