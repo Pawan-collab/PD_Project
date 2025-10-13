@@ -18,6 +18,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { contactService } from "@/services/contact.service";
 import type { Contact } from "@/types/contact.types";
@@ -49,6 +56,8 @@ export default function AdminContacts() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const { toast } = useToast();
 
   // Fetch contacts on component mount
@@ -125,6 +134,16 @@ export default function AdminContacts() {
   const closeDeleteDialog = () => {
     setDeleteDialogOpen(false);
     setContactToDelete(null);
+  };
+
+  const openViewDetails = (contact: Contact) => {
+    setSelectedContact(contact);
+    setViewDetailsOpen(true);
+  };
+
+  const closeViewDetails = () => {
+    setViewDetailsOpen(false);
+    setSelectedContact(null);
   };
 
   const confirmDelete = async () => {
@@ -436,6 +455,7 @@ export default function AdminContacts() {
                         size="sm"
                         variant="outline"
                         className="font-rajdhani border-primary/30 hover:bg-primary/10"
+                        onClick={() => openViewDetails(contact)}
                       >
                         <Eye className="mr-2 h-4 w-4" />
                         View Details
@@ -456,6 +476,170 @@ export default function AdminContacts() {
             ))}
           </div>
         )}
+
+        {/* View Details Dialog */}
+        <Dialog open={viewDetailsOpen} onOpenChange={setViewDetailsOpen}>
+          <DialogContent className="glass border-primary/20 max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-orbitron text-foreground flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-cyber border border-primary/30">
+                  <Eye className="h-5 w-5 text-white" />
+                </div>
+                Contact Details
+              </DialogTitle>
+              <DialogDescription className="font-rajdhani text-muted-foreground">
+                Complete information about this contact
+              </DialogDescription>
+            </DialogHeader>
+
+            {selectedContact && (
+              <div className="space-y-6 mt-4">
+                {/* Contact Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-orbitron font-semibold text-foreground border-b border-primary/20 pb-2">
+                    Personal Information
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-1">
+                      <label className="text-xs font-rajdhani text-muted-foreground uppercase">Name</label>
+                      <div className="flex items-center gap-2">
+                        <UserCheck className="h-4 w-4 text-primary" />
+                        <span className="font-rajdhani text-foreground">{selectedContact.name}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-rajdhani text-muted-foreground uppercase">Email</label>
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-primary" />
+                        <a href={`mailto:${selectedContact.email}`} className="font-rajdhani text-primary hover:underline">
+                          {selectedContact.email}
+                        </a>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-rajdhani text-muted-foreground uppercase">Phone</label>
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-primary" />
+                        <a href={`tel:${selectedContact.phone}`} className="font-rajdhani text-primary hover:underline">
+                          {selectedContact.phone}
+                        </a>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-rajdhani text-muted-foreground uppercase">Country</label>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <span className="font-rajdhani text-foreground">{selectedContact.country}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Professional Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-orbitron font-semibold text-foreground border-b border-primary/20 pb-2">
+                    Professional Information
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-1">
+                      <label className="text-xs font-rajdhani text-muted-foreground uppercase">Company</label>
+                      <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4 text-primary" />
+                        <span className="font-rajdhani text-foreground">{selectedContact.company_name}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-rajdhani text-muted-foreground uppercase">Job Title</label>
+                      <Badge variant="outline" className="font-rajdhani border-primary/30">
+                        {selectedContact.job_title}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Messages */}
+                {selectedContact.messages && selectedContact.messages.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-orbitron font-semibold text-foreground border-b border-primary/20 pb-2">
+                      Messages ({selectedContact.messages.length})
+                    </h3>
+                    <div className="space-y-4">
+                      {selectedContact.messages.map((msg, idx) => (
+                        <div key={idx} className="bg-muted/30 rounded-lg p-4 border border-primary/10">
+                          <div className="flex items-start gap-3">
+                            <FileText className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
+                            <div className="flex-1 space-y-2">
+                              <p className="text-sm font-rajdhani text-foreground leading-relaxed">
+                                {msg.message}
+                              </p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground font-rajdhani">
+                                <Calendar className="h-3 w-3" />
+                                <span>Submitted on {formatDate(msg.submitted_at)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Metadata */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-orbitron font-semibold text-foreground border-b border-primary/20 pb-2">
+                    Record Information
+                  </h3>
+                  <div className="bg-muted/30 rounded-lg p-4 border border-primary/10">
+                    <div className="grid gap-3 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground font-rajdhani">Contact ID:</span>
+                        <code className="text-xs bg-background px-2 py-1 rounded border border-primary/20 font-mono">
+                          {selectedContact._id}
+                        </code>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground font-rajdhani">First Contact:</span>
+                        <span className="font-rajdhani text-foreground">{formatDate(selectedContact.created_at)}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground font-rajdhani">Last Updated:</span>
+                        <span className="font-rajdhani text-foreground">
+                          {selectedContact.updated_at ? formatDate(selectedContact.updated_at) : 'N/A'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground font-rajdhani">Total Messages:</span>
+                        <Badge className="bg-primary/20 text-primary border-primary/30 font-rajdhani">
+                          {selectedContact.messages?.length || 0}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-4 border-t border-primary/20">
+                  <Button
+                    variant="outline"
+                    className="flex-1 font-rajdhani border-primary/30"
+                    onClick={closeViewDetails}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    asChild
+                    className="flex-1 font-rajdhani bg-gradient-cyber hover:shadow-neon"
+                  >
+                    <a href={`mailto:${selectedContact.email}`}>
+                      <Mail className="mr-2 h-4 w-4" />
+                      Send Email
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
