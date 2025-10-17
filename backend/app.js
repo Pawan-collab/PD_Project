@@ -19,7 +19,8 @@ const solutionRouter = require("./routes/solutionRoutes");
 
 const app = express();
 
-connectToDB();
+// Connect to DB asynchronously - will be called when needed
+connectToDB().catch(err => console.error('Initial DB connection failed:', err));
 
 // CORS Configuration - Must be before other middleware
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
