@@ -22,9 +22,26 @@ const app = express();
 connectToDB().catch(err => console.error('Initial DB connection failed:', err));
 
 // CORS Configuration - Must be before other middleware
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
+// Allow multiple origins for development and production
+const ALLOWED_ORIGINS = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://pd-project-wine.vercel.app",
+  process.env.CLIENT_ORIGIN, // Allow custom origin from env
+].filter(Boolean); // Remove undefined values
+
 const corsOptions = {
-  origin: CLIENT_ORIGIN,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
