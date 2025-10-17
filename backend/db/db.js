@@ -12,8 +12,12 @@ async function connectToDB() {
 
     try {
         if (!process.env.DB_CONNECT) {
+            console.error('DB_CONNECT environment variable is not defined');
+            console.error('Available env vars:', Object.keys(process.env).join(', '));
             throw new Error('DB_CONNECT environment variable is not defined');
         }
+
+        console.log('Attempting to connect to MongoDB...');
 
         // Configure mongoose for serverless environment
         mongoose.set('bufferCommands', false); // Disable buffering to fail fast
@@ -27,10 +31,11 @@ async function connectToDB() {
         });
 
         cachedConnection = db;
-        console.log('Connected to MongoDB');
+        console.log('Connected to MongoDB successfully');
         return db;
     } catch (error) {
         console.error('Error connecting to MongoDB:', error.message);
+        console.error('Error details:', error);
         cachedConnection = null;
         throw error;
     }
