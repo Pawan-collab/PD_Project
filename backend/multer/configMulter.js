@@ -2,17 +2,33 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 
-const UPLOAD_ROOT = path.join(__dirname, "..", "..", "public", "uploads");
+// Check if we're in Vercel serverless environment
+const IS_VERCEL = process.env.VERCEL || process.env.NOW_REGION;
+
+// Use /tmp directory in serverless (only temp storage)
+const UPLOAD_ROOT = IS_VERCEL
+  ? "/tmp/uploads"
+  : path.join(__dirname, "..", "..", "public", "uploads");
 
 function ensureDir(dirPath) {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
+  try {
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+  } catch (error) {
+    console.error("Failed to create directory:", error.message);
+    // Don't throw error, just log it
   }
 }
 
 function storageConfig(subdir = "uploads") {
   const dest = path.join(UPLOAD_ROOT, subdir);
-  ensureDir(dest);
+
+  // Only try to create dir if not in Vercel or if it's /tmp
+  if (!IS_VERCEL || dest.startsWith('/tmp')) {
+    ensureDir(dest);
+  }
+
   return multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, dest),
     filename: (_req, file, cb) => {
@@ -48,16 +64,47 @@ function fileFilter(_req, file, cb) {
   cb(null, true);
 }
 
+// Optional middleware - allows requests to proceed even without files
+function optionalSingleUpload({
+  subdir = "uploads",
+  fieldName = "file",
+  maxSizeMB = 20,
+} = {}) {
+  const upload = multer({
+    storage: storageConfig(subdir),
+    fileFilter,
+    limits: { fileSize: maxSizeMB * 1024 * 1024 },
+  }).single(fieldName);
+
+  // Wrap multer to make it non-blocking
+  return (req, res, next) => {
+    upload(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        console.error("Multer error:", err);
+        // Continue anyway, file upload is optional
+        return next();
+      } else if (err) {
+        console.error("Upload error:", err);
+        // Continue anyway
+        return next();
+      }
+      next();
+    });
+  };
+}
+
 module.exports.singleUpload = ({
   subdir = "uploads",
   fieldName = "file",
   maxSizeMB = 20,
 } = {}) =>
-  multer({
-    storage: storageConfig(subdir),
-    fileFilter,
-    limits: { fileSize: maxSizeMB * 1024 * 1024 },
-  }).single(fieldName);
+  IS_VERCEL
+    ? optionalSingleUpload({ subdir, fieldName, maxSizeMB })
+    : multer({
+        storage: storageConfig(subdir),
+        fileFilter,
+        limits: { fileSize: maxSizeMB * 1024 * 1024 },
+      }).single(fieldName);
 
 module.exports.multiUpload = ({
   subdir = "uploads",
