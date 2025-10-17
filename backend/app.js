@@ -14,11 +14,7 @@ const postRouter = require("./routes/postRoutes");
 const articleRouter = require("./routes/articleRoutes");
 const projectRouter = require("./routes/projectRoutes");
 const galleryRouter = require("./routes/galleryRoutes");
-// const chatbotRouter = require("./routes/chatBot.routes");
-// const industryRouter = require("./routes/industry.routes");
-// const solutionRouter = require("./routes/solution.routes");
 const eventRouter = require("./routes/eventRoutes");
-// const eventRegistrationRouter = require("./routes/eventRegistration.routes");
 const solutionRouter = require("./routes/solutionRoutes");
 
 const app = express();
@@ -33,8 +29,8 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   exposedHeaders: ["Content-Range", "X-Content-Range"],
-  maxAge: 600, // Cache preflight request for 10 minutes
-  optionsSuccessStatus: 204, // Some legacy browsers choke on 204
+  maxAge: 600,
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
@@ -52,6 +48,10 @@ app.get("/", (_req, res) => {
   res.send("Hello im responding to client side!");
 });
 
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true, message: "Backend is running fine " });
+});
+
 app.use("/admin", adminRouter);
 app.use("/contact", contactRouter);
 app.use("/feedback", feedbackRouter);
@@ -59,11 +59,7 @@ app.use("/posts", postRouter);
 app.use("/articles", articleRouter);
 app.use("/projects", projectRouter);
 app.use("/gallery", galleryRouter);
-// app.use("/chatbot", chatbotRouter);
-// app.use("/industries", industryRouter);
-// app.use("/solutions", solutionRouter);
 app.use("/events", eventRouter);
-// app.use("/eventRegistrations", eventRegistrationRouter);
 app.use("/solutions", solutionRouter);
 
 app.use((req, res) => {
