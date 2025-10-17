@@ -237,7 +237,7 @@ class GalleryService {
     // Otherwise, treat as local file path
     // Remove 'public/' prefix if it exists
     const cleanPath = imagePath.replace(/^public\//, '');
-    return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/${cleanPath}`;
+    return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}/${cleanPath}`;
   }
 }
 
