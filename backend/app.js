@@ -18,8 +18,19 @@ const solutionRouter = require("./routes/solutionRoutes");
 
 const app = express();
 
-// Connect to DB asynchronously - will be called when needed
-connectToDB().catch(err => console.error('Initial DB connection failed:', err));
+// Middleware to ensure DB connection for each request (serverless-friendly)
+app.use(async (req, res, next) => {
+  try {
+    await connectToDB();
+    next();
+  } catch (error) {
+    console.error('Database connection error:', error.message);
+    res.status(503).json({
+      success: false,
+      message: 'Database connection failed. Please try again.'
+    });
+  }
+});
 
 // CORS Configuration - Must be before other middleware
 // Allow multiple origins for development and production
