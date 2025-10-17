@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-const path = require("path");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -40,10 +39,12 @@ app.use(cookieParser());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "..", "public", "uploads"))
-);
+// Static file serving - commented out for Vercel serverless
+// Use cloud storage (Cloudinary, S3, etc.) for production file uploads
+// app.use(
+//   "/uploads",
+//   express.static(path.join(__dirname, "..", "public", "uploads"))
+// );
 
 app.get("/", (_req, res) => {
   res.send("Hello im responding to client side!");
